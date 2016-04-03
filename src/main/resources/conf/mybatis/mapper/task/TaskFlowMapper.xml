@@ -1,101 +1,44 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.rtmap.apistore.task.dao.TaskFlowDao" >
-  <resultMap id="BaseResultMap" type="com.rtmap.apistore.task.entity.TaskFlow" >
-   
-    <id column="FLOW_ID" property="flowId" jdbcType="VARCHAR" />
-    <result column="TASK_ID" property="taskId" jdbcType="VARCHAR" />
-    <result column="TAS_ASSIGNER" property="tasAssigner" jdbcType="VARCHAR" />
-    <result column="TASK_HANDLER" property="taskHandler" jdbcType="VARCHAR" />
-    <result column="ASSIGN_TIME" property="assignTime" jdbcType="TIMESTAMP" />
-  </resultMap>
-  <sql id="Base_Column_List" >
-   
-    FLOW_ID, TASK_ID, TAS_ASSIGNER, TASK_HANDLER, ASSIGN_TIME
-  </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
-   
-    select 
-    <include refid="Base_Column_List" />
-    from task_flow
-    where FLOW_ID = #{flowId,jdbcType=VARCHAR}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
-   
-    delete from task_flow
-    where FLOW_ID = #{flowId,jdbcType=VARCHAR}
-  </delete>
-  <insert id="insert" parameterType="com.rtmap.apistore.task.entity.TaskFlow" >
-   
-    insert into task_flow (FLOW_ID, TASK_ID, TAS_ASSIGNER, 
-      TASK_HANDLER, ASSIGN_TIME)
-    values (#{flowId,jdbcType=VARCHAR}, #{taskId,jdbcType=VARCHAR}, #{tasAssigner,jdbcType=VARCHAR}, 
-      #{taskHandler,jdbcType=VARCHAR}, #{assignTime,jdbcType=TIMESTAMP})
-  </insert>
-  <insert id="insertSelective" parameterType="com.rtmap.apistore.task.entity.TaskFlow" >
-   
-    insert into task_flow
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="flowId != null" >
-        FLOW_ID,
-      </if>
-      <if test="taskId != null" >
-        TASK_ID,
-      </if>
-      <if test="tasAssigner != null" >
-        TAS_ASSIGNER,
-      </if>
-      <if test="taskHandler != null" >
-        TASK_HANDLER,
-      </if>
-      <if test="assignTime != null" >
-        ASSIGN_TIME,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="flowId != null" >
-        #{flowId,jdbcType=VARCHAR},
-      </if>
-      <if test="taskId != null" >
-        #{taskId,jdbcType=VARCHAR},
-      </if>
-      <if test="tasAssigner != null" >
-        #{tasAssigner,jdbcType=VARCHAR},
-      </if>
-      <if test="taskHandler != null" >
-        #{taskHandler,jdbcType=VARCHAR},
-      </if>
-      <if test="assignTime != null" >
-        #{assignTime,jdbcType=TIMESTAMP},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.rtmap.apistore.task.entity.TaskFlow" >
-   
-    update task_flow
-    <set >
-      <if test="taskId != null" >
-        TASK_ID = #{taskId,jdbcType=VARCHAR},
-      </if>
-      <if test="tasAssigner != null" >
-        TAS_ASSIGNER = #{tasAssigner,jdbcType=VARCHAR},
-      </if>
-      <if test="taskHandler != null" >
-        TASK_HANDLER = #{taskHandler,jdbcType=VARCHAR},
-      </if>
-      <if test="assignTime != null" >
-        ASSIGN_TIME = #{assignTime,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-    where FLOW_ID = #{flowId,jdbcType=VARCHAR}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.rtmap.apistore.task.entity.TaskFlow" >
-   
-    update task_flow
-    set TASK_ID = #{taskId,jdbcType=VARCHAR},
-      TAS_ASSIGNER = #{tasAssigner,jdbcType=VARCHAR},
-      TASK_HANDLER = #{taskHandler,jdbcType=VARCHAR},
-      ASSIGN_TIME = #{assignTime,jdbcType=TIMESTAMP}
-    where FLOW_ID = #{flowId,jdbcType=VARCHAR}
-  </update>
+<mapper namespace="com.rtmap.apistore.interfaces.taskland.dao.TaskFlowDao">
+	<resultMap id="BaseResultMap"
+		type="com.rtmap.apistore.interfaces.taskland.entity.TaskFlow">
+
+		<id column="FLOW_ID" property="flowId" jdbcType="VARCHAR" />
+		<result column="TASK_ID" property="taskId" jdbcType="VARCHAR" />
+		<result column="TAS_ASSIGNER" property="tasAssigner" jdbcType="VARCHAR" />
+		<result column="TASK_HANDLER" property="taskHandler" jdbcType="VARCHAR" />
+		<result column="ASSIGN_TIME" property="assignTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+
+		FLOW_ID, TASK_ID, TAS_ASSIGNER, TASK_HANDLER, ASSIGN_TIME
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+
+		select
+		<include refid="Base_Column_List" />
+		from ${SCHEMA_TASK}.task_flow
+		where FLOW_ID =
+		#{flowId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+
+		delete from
+		${SCHEMA_TASK}.task_flow
+		where FLOW_ID = #{flowId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert"
+		parameterType="com.rtmap.apistore.interfaces.taskland.entity.TaskFlow">
+
+		insert into ${SCHEMA_TASK}.task_flow (FLOW_ID, TASK_ID,
+		TAS_ASSIGNER,
+		TASK_HANDLER, ASSIGN_TIME)
+		values
+		(#{flowId,jdbcType=VARCHAR}, #{taskId,jdbcType=VARCHAR},
+		#{tasAssigner,jdbcType=VARCHAR},
+		#{taskHandler,jdbcType=VARCHAR},
+		now())
+	</insert>
 </mapper>

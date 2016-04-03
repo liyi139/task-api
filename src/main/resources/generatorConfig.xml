@@ -19,7 +19,7 @@
 			<property name="forceBigDecimals" value="false" />
 		</javaTypeResolver>
 
-		<javaModelGenerator targetPackage="com.rtmap.apistore.task.entity" targetProject="src/main/java">
+		<javaModelGenerator targetPackage="com.rtmap.apistore.interfaces.taskland.entity" targetProject="src/main/java">
 			<property name="enableSubPackages" value="true" />
 			<property name="trimStrings" value="true" />
 		</javaModelGenerator>

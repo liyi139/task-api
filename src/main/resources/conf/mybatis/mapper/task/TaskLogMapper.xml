@@ -1,114 +1,48 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.rtmap.apistore.task.dao.TaskLogDao" >
-  <resultMap id="BaseResultMap" type="com.rtmap.apistore.task.entity.TaskLog" >
-   
-    <id column="LOG_ID" property="logId" jdbcType="VARCHAR" />
-    <result column="TASK_ID" property="taskId" jdbcType="VARCHAR" />
-    <result column="OPERATE_TYPE" property="operateType" jdbcType="SMALLINT" />
-    <result column="OPERATE_CONT" property="operateCont" jdbcType="VARCHAR" />
-    <result column="OPERATOR" property="operator" jdbcType="VARCHAR" />
-    <result column="OPERATE_TIME" property="operateTime" jdbcType="TIMESTAMP" />
-  </resultMap>
-  <sql id="Base_Column_List" >
-   
-    LOG_ID, TASK_ID, OPERATE_TYPE, OPERATE_CONT, OPERATOR, OPERATE_TIME
-  </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
-   
-    select 
-    <include refid="Base_Column_List" />
-    from task_log
-    where LOG_ID = #{logId,jdbcType=VARCHAR}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
-   
-    delete from task_log
-    where LOG_ID = #{logId,jdbcType=VARCHAR}
-  </delete>
-  <insert id="insert" parameterType="com.rtmap.apistore.task.entity.TaskLog" >
-   
-    insert into task_log (LOG_ID, TASK_ID, OPERATE_TYPE, 
-      OPERATE_CONT, OPERATOR, OPERATE_TIME
-      )
-    values (#{logId,jdbcType=VARCHAR}, #{taskId,jdbcType=VARCHAR}, #{operateType,jdbcType=SMALLINT}, 
-      #{operateCont,jdbcType=VARCHAR}, #{operator,jdbcType=VARCHAR}, #{operateTime,jdbcType=TIMESTAMP}
-      )
-  </insert>
-  <insert id="insertSelective" parameterType="com.rtmap.apistore.task.entity.TaskLog" >
-   
-    insert into task_log
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="logId != null" >
-        LOG_ID,
-      </if>
-      <if test="taskId != null" >
-        TASK_ID,
-      </if>
-      <if test="operateType != null" >
-        OPERATE_TYPE,
-      </if>
-      <if test="operateCont != null" >
-        OPERATE_CONT,
-      </if>
-      <if test="operator != null" >
-        OPERATOR,
-      </if>
-      <if test="operateTime != null" >
-        OPERATE_TIME,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="logId != null" >
-        #{logId,jdbcType=VARCHAR},
-      </if>
-      <if test="taskId != null" >
-        #{taskId,jdbcType=VARCHAR},
-      </if>
-      <if test="operateType != null" >
-        #{operateType,jdbcType=SMALLINT},
-      </if>
-      <if test="operateCont != null" >
-        #{operateCont,jdbcType=VARCHAR},
-      </if>
-      <if test="operator != null" >
-        #{operator,jdbcType=VARCHAR},
-      </if>
-      <if test="operateTime != null" >
-        #{operateTime,jdbcType=TIMESTAMP},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.rtmap.apistore.task.entity.TaskLog" >
-   
-    update task_log
-    <set >
-      <if test="taskId != null" >
-        TASK_ID = #{taskId,jdbcType=VARCHAR},
-      </if>
-      <if test="operateType != null" >
-        OPERATE_TYPE = #{operateType,jdbcType=SMALLINT},
-      </if>
-      <if test="operateCont != null" >
-        OPERATE_CONT = #{operateCont,jdbcType=VARCHAR},
-      </if>
-      <if test="operator != null" >
-        OPERATOR = #{operator,jdbcType=VARCHAR},
-      </if>
-      <if test="operateTime != null" >
-        OPERATE_TIME = #{operateTime,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-    where LOG_ID = #{logId,jdbcType=VARCHAR}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.rtmap.apistore.task.entity.TaskLog" >
-   
-    update task_log
-    set TASK_ID = #{taskId,jdbcType=VARCHAR},
-      OPERATE_TYPE = #{operateType,jdbcType=SMALLINT},
-      OPERATE_CONT = #{operateCont,jdbcType=VARCHAR},
-      OPERATOR = #{operator,jdbcType=VARCHAR},
-      OPERATE_TIME = #{operateTime,jdbcType=TIMESTAMP}
-    where LOG_ID = #{logId,jdbcType=VARCHAR}
-  </update>
+<mapper namespace="com.rtmap.apistore.interfaces.taskland.dao.TaskLogDao">
+	<resultMap id="BaseResultMap"
+		type="com.rtmap.apistore.interfaces.taskland.entity.TaskLog">
+
+		<id column="LOG_ID" property="logId" jdbcType="VARCHAR" />
+		<result column="TASK_ID" property="taskId" jdbcType="VARCHAR" />
+		<result column="OPERATE_TYPE" property="operateType" jdbcType="SMALLINT" />
+		<result column="OPERATE_CONT" property="operateCont" jdbcType="VARCHAR" />
+		<result column="OPERATOR" property="operator" jdbcType="VARCHAR" />
+		<result column="OPERATE_TIME" property="operateTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+
+		LOG_ID, TASK_ID, OPERATE_TYPE, OPERATE_CONT, OPERATOR,
+		OPERATE_TIME
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+
+		select
+		<include refid="Base_Column_List" />
+		from ${SCHEMA_TASK}.task_log
+		where LOG_ID = #{logId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+
+		delete from
+		${SCHEMA_TASK}.task_log
+		where LOG_ID = #{logId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert"
+		parameterType="com.rtmap.apistore.interfaces.taskland.entity.TaskLog">
+
+		insert into ${SCHEMA_TASK}.task_log (LOG_ID,
+		TASK_ID,
+		OPERATE_TYPE,
+		OPERATE_CONT, OPERATOR, OPERATE_TIME
+		)
+		values
+		(#{logId,jdbcType=VARCHAR}, #{taskId,jdbcType=VARCHAR},
+		#{operateType,jdbcType=SMALLINT},
+		#{operateCont,jdbcType=VARCHAR},
+		#{operator,jdbcType=VARCHAR}, now()
+		)
+	</insert>
 </mapper>
