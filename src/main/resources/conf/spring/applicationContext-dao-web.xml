@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context" xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+	http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.2.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd" default-lazy-init="false">
+	<!-- ::::::::::::: web Api调用事实表::::::::::::: -->
+	<description>Spring DAO 层配置</description>
+	<!-- ::::::::::::: 事务配置 Begin::::::::::::: -->
+	<bean id="transactionManager_web" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource_web" />
+	</bean>
+	<bean id="transactionInterceptor_web" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+		<property name="transactionManager" ref="transactionManager_web"></property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="save*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="insert*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="update*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="delete*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="find*">PROPAGATION_REQUIRED,readOnly</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- ::::::::::::: MyBatis配置 Begin::::::::::::: -->
+	<!--typeAliases 扫描包定义 全量扫描 -->
+	<bean id="typeAliasesPackagePropTAS" class="com.rtmap.apistore.core.extend.TypeAliasesPackagePropExtend">
+		<property name="typeAliasesPackages">
+			<list>
+				<value>com.rtmap.apistore.core.**.entity</value>
+				<value>com.rtmap.apistore.core.**.bean</value>
+				<value>com.rtmap.apistore.common.**.entity</value>
+				<value>com.rtmap.apistore.common.**.bean</value>
+				<value>com.rtmap.apistore.dimension.**.entity</value>
+				<value>com.rtmap.apistore.dimension.**.bean</value>
+				<value>com.rtmap.apistore.logging.**.entity</value>
+				<value>com.rtmap.apistore.interfaces.**.entity</value>
+				<value>com.rtmap.apistore.interfaces.**.bean</value>
+			</list>
+		</property>
+		<property name="rootPackage" value="com/rtmap/apistore" />
+	</bean>
+	<!-- 基础配置库SessionFactory -->
+	<bean id="sqlSessionFactory_web" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="configLocation" value="classpath:conf/mybatis/mybatis-config.xml" />
+		<property name="dataSource" ref="dataSource_web" />
+		<!-- 自动扫描entity目录, 省掉Configuration.xml里的手工配置 -->
+		<property name="typeAliasesPackage" ref="typeAliasesPackagePropTAS" />
+		<!-- 显式指定Mapper文件位置 -->
+		<property name="mapperLocations" value="classpath*:conf/mybatis/**/*Mapper.xml" />
+		<property name="databaseIdProvider" ref="databaseIdProvider" />
+		<property name="typeAliasesSuperType" value="com.rtmap.apistore.core.base.entity.IEntity" />
+		<!-- SQL的*Mapper.xml中公共配置参数 -->
+		<property name="configurationProperties">
+			<props>
+			    <prop key="SCHEMA_OPR">${core.ds.schema.opr}</prop>
+				<prop key="SCHEMA_WEB">${core.ds.schema.web}</prop>
+				<prop key="SCHEMA_DIM">${core.ds.schema.dim}</prop>
+				<prop key="SCHEMA_TASK">${core.ds.schema.taskland}</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- Mybatis Repository 扫描定义 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.rtmap.apistore.interfaces.**.dao" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory_web" />
+		<property name="annotationClass" value="com.rtmap.apistore.common.annotation.WebRepository" />
+	</bean>
+
+	<!-- 注入session工厂，可直接使用sqlsession -->
+	<bean id="sqlSession_web" class="org.mybatis.spring.SqlSessionTemplate" scope="prototype">
+		<constructor-arg index="0" ref="sqlSessionFactory_web" />
+	</bean>
+
+	<!-- 注入jdbcTemplate -->
+	<bean id="jdbcTemplate_web" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource_web" />
+	</bean>
+
+	<!-- :::::: 单元测试、测试、生产不同环境的数据源配置 :::::: -->
+	<!-- 生产环境 -->
+	<beans profile="production">
+		<bean id="dataSource_web" class="org.springframework.jndi.JndiObjectFactoryBean">
+			<property name="jndiName">
+				<value>${jndi.prefix}${jndi.ds.web.production}</value>
+			</property>
+		</bean>
+	</beans>
+
+	<!-- 测试环境 -->
+	<beans profile="test">
+		<bean id="dataSourceSpied_web" class="org.springframework.jndi.JndiObjectFactoryBean">
+			<property name="jndiName">
+				<value>${jndi.prefix.test}${jndi.ds.web.test}</value>
+			</property>
+		</bean>
+
+		<!--log4jdbc-remix 日志输出跟踪 -->
+		<bean id="dataSource_web" class="net.sf.log4jdbc.Log4jdbcProxyDataSource">
+			<constructor-arg ref="dataSourceSpied_web" />
+		</bean>
+	</beans>
+	<!-- 测试环境 -->
+	<beans profile="unitTest">
+		<bean id="dataSource_web" class="org.apache.commons.dbcp.BasicDataSource"
+			destroy-method="close">
+			<property name="driverClassName" value="${jdbc.base.driverClass}" />
+			<property name="url" value="${jdbc.base.url}" />
+			<property name="username" value="${jdbc.base.username}" />
+			<property name="password" value="${jdbc.base.password}" />
+			<property name="defaultAutoCommit" value="false" />
+		</bean>		
+	</beans>	
+</beans>
