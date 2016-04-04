@@ -28,7 +28,7 @@
 
 	<resultMap type="com.rtmap.apistore.interfaces.taskland.bean.TaskInfoBean"
 		id="BaseResultMap2" extends="BaseResultMap">
-		<result column="SUB_TASK_IDS" jdbcType="String" property="subTaskIds" />
+		<result column="SUB_TASK_IDS" jdbcType="VARCHAR" property="subTaskIds" />
 		<result column="SUB_COUNT" jdbcType="INTEGER" property="subCount" />
 		<result column="SUB_PROCESS_COUNT" jdbcType="INTEGER" property="subProcessCount" />
 	</resultMap>
@@ -44,40 +44,36 @@
 	</sql>
 	<select id="selectByPrimaryKey" parameterType="java.lang.String"
 		resultMap="BaseResultMap2">
-		<![CDATA[
 		SELECT
-			<include refid="Base_Column_List" />,
-			GROUP_CONCAT(C.TASK_ID) AS SUB_TASK_IDS,
-			COUNT(C.TASK_ID) AS SUB_COUNT,
-			SUM(IF(C.TASK_STATUS<3,1,0) AS SUB_PROCESS_COUNT
+		P.*,
+		GROUP_CONCAT(C.TASK_ID) AS SUB_TASK_IDS,
+		COUNT(C.TASK_ID) AS SUB_COUNT,
+			<![CDATA[ SUM(IF(C.TASK_STATUS<3,1,0)) AS SUB_PROCESS_COUNT ]]>
 		FROM ${SCHEMA_TASK}.TASK_INFO P
 		LEFT OUTER JOIN
 		${SCHEMA_TASK}.TASK_INFO C
-		ON P.TASK_PID=C.TASK_ID
-		WHERE P.TASK_ID = #{taskId,jdbcType=VARCHAR}
-		  AND P.TASK_STATUS > 0
-		GROUP BY
-		]]>
-		<include refid="Base_Column_List" />
+		ON C.TASK_PID=P.TASK_ID
+		WHERE P.TASK_ID =
+		#{taskId,jdbcType=VARCHAR}
+		<![CDATA[ AND P.TASK_STATUS > 0]]>
+		GROUP BY P.TASK_ID
 		order by P.MODIFY_TIME DESC
 	</select>
 	<select id="selectByTaskPid" parameterType="java.lang.String"
 		resultMap="BaseResultMap2">
-		<![CDATA[
 		SELECT
-			<include refid="Base_Column_List" />,
-			GROUP_CONCAT(C.TASK_ID) AS SUB_TASK_IDS,
-			COUNT(C.TASK_ID) AS SUB_COUNT,
-			SUM(IF(C.TASK_STATUS<3,1,0) AS SUB_PROCESS_COUNT
+		P.*,
+		GROUP_CONCAT(C.TASK_ID) AS SUB_TASK_IDS,
+		COUNT(C.TASK_ID) AS SUB_COUNT,
+			<![CDATA[ SUM(IF(C.TASK_STATUS<3,1,0)) AS SUB_PROCESS_COUNT ]]>
 		FROM ${SCHEMA_TASK}.TASK_INFO P
 		LEFT OUTER JOIN
 		${SCHEMA_TASK}.TASK_INFO C
-		ON P.TASK_PID=C.TASK_ID
-		WHERE P.TASKP_ID = #{taskId,jdbcType=VARCHAR}
-		  AND P.TASK_STATUS > 0
-		GROUP BY
-		]]>
-		<include refid="Base_Column_List" />
+		ON C.TASK_PID=P.TASK_ID
+		WHERE P.TASK_PID =
+		#{taskId,jdbcType=VARCHAR}
+		<![CDATA[ AND P.TASK_STATUS > 0]]>
+		GROUP BY P.TASK_ID
 		order by P.MODIFY_TIME DESC
 	</select>
 	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">

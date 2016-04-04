@@ -9,8 +9,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.rtmap.apistore.core.web.page.PageQuery;
 import com.rtmap.apistore.interfaces.taskland.bean.TaskInfoBean;
 import com.rtmap.apistore.interfaces.taskland.entity.TaskAttachFile;
 import com.rtmap.apistore.interfaces.taskland.entity.TaskComment;
@@ -18,7 +20,7 @@ import com.rtmap.apistore.interfaces.taskland.entity.TaskFlow;
 import com.rtmap.apistore.interfaces.taskland.entity.TaskInfo;
 import com.rtmap.apistore.interfaces.taskland.entity.TaskLog;
 import com.rtmap.apistore.interfaces.taskland.entity.TaskParticipant;
-import com.rtmap.apistore.interfaces.taskland.service.TaskQueryService;
+import com.rtmap.apistore.interfaces.taskland.service.TaskInfoService;
 
 /**
  * 任务田，任务查询
@@ -26,9 +28,10 @@ import com.rtmap.apistore.interfaces.taskland.service.TaskQueryService;
 @Controller
 @RequestMapping("/taskland/v1.0/")
 public class TaskInfoController {
+	@SuppressWarnings("unused")
 	private final static Logger logger = LoggerFactory.getLogger(TaskInfoController.class);
 	@Autowired
-	private TaskQueryService taskQueryService;
+	private TaskInfoService taskQueryService;
 
 	/**
 	 * 任务详情查询接口
@@ -65,8 +68,10 @@ public class TaskInfoController {
 	 */
 	@RequestMapping(value = "/tasks/{taskId}/logs", method = { RequestMethod.GET })
 	@ResponseBody
-	public List<TaskLog> getLogs(@PathVariable(value = "taskId") String taskId) {
-		return this.taskQueryService.getOperLogsByTaskId(taskId);
+	public List<TaskLog> getLogs(@PathVariable(value = "taskId") String taskId,
+			@RequestParam(required = false, value = "limit") Integer limit,
+			@RequestParam(required = false, value = "offset") Integer curPage) {
+		return this.taskQueryService.getOperLogsByTaskId(taskId, new PageQuery(curPage, limit));
 	}
 
 	/**
@@ -78,8 +83,10 @@ public class TaskInfoController {
 	 */
 	@RequestMapping(value = "/tasks/{taskId}/logs/view", method = { RequestMethod.GET })
 	@ResponseBody
-	public List<TaskLog> getViewLogs(@PathVariable(value = "taskId") String taskId) {
-		return this.taskQueryService.getViewLogsByTaskId(taskId);
+	public List<TaskLog> getViewLogs(@PathVariable(value = "taskId") String taskId,
+			@RequestParam(required = false, value = "limit") Integer limit,
+			@RequestParam(required = false, value = "offset") Integer curPage) {
+		return this.taskQueryService.getViewLogsByTaskId(taskId, new PageQuery(curPage, limit));
 	}
 
 	/**
@@ -91,8 +98,10 @@ public class TaskInfoController {
 	 */
 	@RequestMapping(value = "/tasks/{taskId}/logs/state", method = { RequestMethod.GET })
 	@ResponseBody
-	public List<TaskLog> getStateLogs(@PathVariable(value = "taskId") String taskId) {
-		return this.taskQueryService.getStateLogsByTaskId(taskId);
+	public List<TaskLog> getStateLogs(@PathVariable(value = "taskId") String taskId,
+			@RequestParam(required = false, value = "limit") Integer limit,
+			@RequestParam(required = false, value = "offset") Integer curPage) {
+		return this.taskQueryService.getStateLogsByTaskId(taskId, new PageQuery(curPage, limit));
 	}
 
 	/**

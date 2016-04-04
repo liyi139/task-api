@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.common.collect.ImmutableMap;
 import com.rtmap.apistore.interfaces.taskland.bean.TaskInfoBean;
-import com.rtmap.apistore.interfaces.taskland.service.TaskOperateService;
+import com.rtmap.apistore.interfaces.taskland.service.TaskOperService;
 
 /**
  * 任务田，任务操作
@@ -24,9 +24,10 @@ import com.rtmap.apistore.interfaces.taskland.service.TaskOperateService;
 @Controller
 @RequestMapping("/taskland/v1.0/")
 public class TaskOperateExtController {
+	@SuppressWarnings("unused")
 	private final static Logger logger = LoggerFactory.getLogger(TaskOperateExtController.class);
 	@Autowired
-	private TaskOperateService taskOperateService;
+	private TaskOperService taskOperateService;
 
 	/**
 	 * 添加回复/评论任务接口

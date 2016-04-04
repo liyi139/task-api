@@ -41,13 +41,22 @@
 	<insert id="insert"
 		parameterType="com.rtmap.apistore.interfaces.taskland.entity.TaskFlow">
 
-		insert into ${SCHEMA_TASK}.task_flow (FLOW_ID, TASK_ID,
-		TAS_ASSIGNER,
-		TASK_HANDLER, ASSIGN_TIME)
-		values
-		(#{flowId,jdbcType=VARCHAR}, #{taskId,jdbcType=VARCHAR},
+		insert into ${SCHEMA_TASK}.task_flow (FLOW_ID,
+		TASK_ID,TAS_ASSIGNER,TASK_HANDLER, ASSIGN_TIME)
+		select
+		#{flowId,jdbcType=VARCHAR}, #{taskId,jdbcType=VARCHAR},
 		#{tasAssigner,jdbcType=VARCHAR},
 		#{taskHandler,jdbcType=VARCHAR},
-		now())
+		now()
+		from dual
+		where not exists(
+		select * from ${SCHEMA_TASK}.task_flow
+		where
+		TASK_ID=#{taskId,jdbcType=VARCHAR}
+		AND
+		TAS_ASSIGNER=#{tasAssigner,jdbcType=VARCHAR}
+		AND
+		TASK_HANDLER=#{taskHandler,jdbcType=VARCHAR}
+		)
 	</insert>
 </mapper>

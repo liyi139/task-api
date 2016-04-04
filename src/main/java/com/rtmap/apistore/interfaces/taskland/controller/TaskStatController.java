@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.rtmap.apistore.interfaces.taskland.service.TaskQueryService;
+import com.rtmap.apistore.interfaces.taskland.service.TaskInfoService;
 import com.rtmap.apistore.interfaces.taskland.service.TaskStatService;
 
 /**
@@ -20,6 +20,7 @@ import com.rtmap.apistore.interfaces.taskland.service.TaskStatService;
 @Controller
 @RequestMapping("/taskland/v1.0/")
 public class TaskStatController {
+	@SuppressWarnings("unused")
 	private final static Logger logger = LoggerFactory.getLogger(TaskStatController.class);
 	@Autowired
 	private TaskStatService taskStatService;

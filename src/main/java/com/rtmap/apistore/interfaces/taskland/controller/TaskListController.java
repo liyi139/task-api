@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.rtmap.apistore.interfaces.taskland.service.TaskQueryService;
+import com.rtmap.apistore.interfaces.taskland.service.TaskInfoService;
 
 /**
  * 任务田，任务查询
@@ -18,22 +18,23 @@ import com.rtmap.apistore.interfaces.taskland.service.TaskQueryService;
 @Controller
 @RequestMapping("/taskland/v1.0/")
 public class TaskListController {
+	@SuppressWarnings("unused")
 	private final static Logger logger = LoggerFactory.getLogger(TaskListController.class);
 	@Autowired
-	private TaskQueryService taskFlowService;
+	private TaskInfoService taskQueryService;
 
 	/**
 	 * 查询任务列表
 	 */
 	private Object _list(String userId, String[] taskTypeAry, String[] taskStatusAry, String sort, String order,
-			Integer limit, Integer offset) {
+			Integer limit, Integer curPage) {
 		return null;
 	}
 
 	/**
 	 * 搜索任务列表
 	 */
-	private Object _search(String userId, String keywords, String sort, String order, Integer limit, Integer offset) {
+	private Object _search(String userId, String keywords, String sort, String order, Integer limit, Integer curPage) {
 		return null;
 	}
 
@@ -47,8 +48,8 @@ public class TaskListController {
 			@RequestParam(required = false, defaultValue = "MODIFY_TIME", value = "sort") String sort,
 			@RequestParam(required = false, defaultValue = "DESC", value = "order") String order,
 			@RequestParam(required = false, value = "limit") Integer limit,
-			@RequestParam(required = false, value = "offset") Integer offset) {
-		return _search(userId, keywords, sort, order, limit, offset);
+			@RequestParam(required = false, value = "curPage") Integer curPage) {
+		return _search(userId, keywords, sort, order, limit, curPage);
 	}
 
 	/**
@@ -60,8 +61,8 @@ public class TaskListController {
 			@RequestParam(required = false, defaultValue = "MODIFY_TIME", value = "sort") String sort,
 			@RequestParam(required = false, defaultValue = "DESC", value = "order") String order,
 			@RequestParam(required = false, value = "limit") Integer limit,
-			@RequestParam(required = false, value = "offset") Integer offset) {
-		return _search(null, keywords, sort, order, limit, offset);
+			@RequestParam(required = false, value = "curPage") Integer curPage) {
+		return _search(null, keywords, sort, order, limit, curPage);
 	}
 
 	/**
@@ -74,8 +75,8 @@ public class TaskListController {
 			@RequestParam(required = false, defaultValue = "MODIFY_TIME", value = "sort") String sort,
 			@RequestParam(required = false, defaultValue = "DESC", value = "order") String order,
 			@RequestParam(required = false, value = "limit") Integer limit,
-			@RequestParam(required = false, value = "offset") Integer offset) {
-		return _list(null, taskTypeAry, taskStatusAry, sort, order, limit, offset);
+			@RequestParam(required = false, value = "curPage") Integer curPage) {
+		return _list(null, taskTypeAry, taskStatusAry, sort, order, limit, curPage);
 	}
 
 	/**
@@ -89,8 +90,8 @@ public class TaskListController {
 			@RequestParam(required = false, defaultValue = "MODIFY_TIME", value = "sort") String sort,
 			@RequestParam(required = false, defaultValue = "DESC", value = "order") String order,
 			@RequestParam(required = false, value = "limit") Integer limit,
-			@RequestParam(required = false, value = "offset") Integer offset) {
-		return _list(userId, taskTypeAry, taskStatusAry, sort, order, limit, offset);
+			@RequestParam(required = false, value = "curPage") Integer curPage) {
+		return _list(userId, taskTypeAry, taskStatusAry, sort, order, limit, curPage);
 	}
 
 	/**
@@ -104,8 +105,8 @@ public class TaskListController {
 			@RequestParam(required = false, defaultValue = "MODIFY_TIME", value = "sort") String sort,
 			@RequestParam(required = false, defaultValue = "DESC", value = "order") String order,
 			@RequestParam(required = false, value = "limit") Integer limit,
-			@RequestParam(required = false, value = "offset") Integer offset) {
-		return _list(userId, taskTypeAry, taskStatusAry, sort, order, limit, offset);
+			@RequestParam(required = false, value = "curPage") Integer curPage) {
+		return _list(userId, taskTypeAry, taskStatusAry, sort, order, limit, curPage);
 	}
 
 	/**
@@ -118,8 +119,8 @@ public class TaskListController {
 			@RequestParam(required = false, defaultValue = "MODIFY_TIME", value = "sort") String sort,
 			@RequestParam(required = false, defaultValue = "DESC", value = "order") String order,
 			@RequestParam(required = false, value = "limit") Integer limit,
-			@RequestParam(required = false, value = "offset") Integer offset) {
-		return _list(null, taskTypeAry, taskStatusAry, sort, order, limit, offset);
+			@RequestParam(required = false, value = "curPage") Integer curPage) {
+		return _list(null, taskTypeAry, taskStatusAry, sort, order, limit, curPage);
 	}
 
 	/**
@@ -133,8 +134,8 @@ public class TaskListController {
 			@RequestParam(required = false, defaultValue = "MODIFY_TIME", value = "sort") String sort,
 			@RequestParam(required = false, defaultValue = "DESC", value = "order") String order,
 			@RequestParam(required = false, value = "limit") Integer limit,
-			@RequestParam(required = false, value = "offset") Integer offset) {
-		return _list(userId, taskTypeAry, taskStatusAry, sort, order, limit, offset);
+			@RequestParam(required = false, value = "curPage") Integer curPage) {
+		return _list(userId, taskTypeAry, taskStatusAry, sort, order, limit, curPage);
 	}
 
 	/**
@@ -148,7 +149,7 @@ public class TaskListController {
 			@RequestParam(required = false, defaultValue = "MODIFY_TIME", value = "sort") String sort,
 			@RequestParam(required = false, defaultValue = "DESC", value = "order") String order,
 			@RequestParam(required = false, value = "limit") Integer limit,
-			@RequestParam(required = false, value = "offset") Integer offset) {
-		return _list(userId, taskTypeAry, taskStatusAry, sort, order, limit, offset);
+			@RequestParam(required = false, value = "curPage") Integer curPage) {
+		return _list(userId, taskTypeAry, taskStatusAry, sort, order, limit, curPage);
 	}
 }

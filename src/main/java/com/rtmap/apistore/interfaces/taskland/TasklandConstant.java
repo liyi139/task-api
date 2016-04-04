@@ -6,4 +6,6 @@ public class TasklandConstant {
 	public static final int LOG_CONTENT_MAX_LENGTH = 100;
 
 	public static final String TASK_PID_ROOT = "-1";
+
+	public static final int DEFAULT_PAGE_LIMIT = 10;
 }
