@@ -1,7 +1,7 @@
 package com.rtmap.apistore.interfaces.taskland.enums;
 
 public enum TaskOperTypeEnum {
-	VIEW(11, "查阅任务"), REPLY(12, "回复任务"), FOLLOW(13, "关注任务"), UNFOLLOW(14, "取消关注"), URGE(15, "催办任务"), 
+	VIEW(11, "查阅任务"), FOLLOW(13, "关注任务"), UNFOLLOW(14, "取消关注"), URGE(15, "催办任务"), 
 	CREATE(21,"创建任务"),  MODIFY(22, "修改任务"), DELETE(23, "删除任务"), 
 	FINISH(31, "标记完成"), REFUSE(32, "拒绝任务"), CANCEL(33, "取消任务"),
 	ASSIGN(41, "转派任务"),

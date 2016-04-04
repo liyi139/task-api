@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.rtmap.apistore.core.base.entity.IEntity;
 
-public class TaskLog implements IEntity{
+public class TaskLog implements IEntity {
 
 	private static final long serialVersionUID = -5721854706110370753L;
 

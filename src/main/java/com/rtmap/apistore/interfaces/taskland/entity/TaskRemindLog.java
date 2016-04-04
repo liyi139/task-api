@@ -4,124 +4,97 @@ import java.util.Date;
 
 import com.rtmap.apistore.core.base.entity.IEntity;
 
-public class TaskRemindLog implements IEntity{
-    
-	private static final long serialVersionUID = 5227871132862846791L;
+public class TaskRemindLog implements IEntity {
 
+	private static final long serialVersionUID = 5227871132862846791L;
 
 	private String remindId;
 
-    
-    private String taskId;
+	private String taskId;
 
-    
-    private String remindCont;
+	private String remindCont;
 
-    
-    private String remindUser;
+	private String remindUser;
 
-    
-    private String remindHandler;
+	private String remindHandler;
 
-    
-    private String remindMode;
+	private String remindMode;
 
-    
-    private Short remindType;
+	private Short remindType;
 
-    
-    private Date recordTime;
+	private Date recordTime;
 
-    
-    private Date remindTime;
+	private Date remindTime;
 
-    
-    public String getRemindId() {
-        return remindId;
-    }
+	public String getRemindId() {
+		return remindId;
+	}
 
-    
-    public void setRemindId(String remindId) {
-        this.remindId = remindId == null ? null : remindId.trim();
-    }
+	public void setRemindId(String remindId) {
+		this.remindId = remindId == null ? null : remindId.trim();
+	}
 
-    
-    public String getTaskId() {
-        return taskId;
-    }
+	public String getTaskId() {
+		return taskId;
+	}
 
-    
-    public void setTaskId(String taskId) {
-        this.taskId = taskId == null ? null : taskId.trim();
-    }
+	public void setTaskId(String taskId) {
+		this.taskId = taskId == null ? null : taskId.trim();
+	}
 
-    
-    public String getRemindCont() {
-        return remindCont;
-    }
+	public String getRemindCont() {
+		return remindCont;
+	}
 
-    
-    public void setRemindCont(String remindCont) {
-        this.remindCont = remindCont == null ? null : remindCont.trim();
-    }
+	public void setRemindCont(String remindCont) {
+		this.remindCont = remindCont == null ? null : remindCont.trim();
+	}
 
-    
-    public String getRemindUser() {
-        return remindUser;
-    }
+	public String getRemindUser() {
+		return remindUser;
+	}
 
-    
-    public void setRemindUser(String remindUser) {
-        this.remindUser = remindUser == null ? null : remindUser.trim();
-    }
+	public void setRemindUser(String remindUser) {
+		this.remindUser = remindUser == null ? null : remindUser.trim();
+	}
 
-    
-    public String getRemindHandler() {
-        return remindHandler;
-    }
+	public String getRemindHandler() {
+		return remindHandler;
+	}
 
-    
-    public void setRemindHandler(String remindHandler) {
-        this.remindHandler = remindHandler == null ? null : remindHandler.trim();
-    }
+	public void setRemindHandler(String remindHandler) {
+		this.remindHandler = remindHandler == null ? null : remindHandler.trim();
+	}
 
-    
-    public String getRemindMode() {
-        return remindMode;
-    }
+	public String getRemindMode() {
+		return remindMode;
+	}
 
-    
-    public void setRemindMode(String remindMode) {
-        this.remindMode = remindMode == null ? null : remindMode.trim();
-    }
+	public void setRemindMode(String remindMode) {
+		this.remindMode = remindMode == null ? null : remindMode.trim();
+	}
 
-    
-    public Short getRemindType() {
-        return remindType;
-    }
+	public Short getRemindType() {
+		return remindType;
+	}
 
-    
-    public void setRemindType(Short remindType) {
-        this.remindType = remindType;
-    }
+	public void setRemindType(Short remindType) {
+		this.remindType = remindType;
+	}
 
-    
-    public Date getRecordTime() {
-        return recordTime;
-    }
+	public Date getRecordTime() {
+		return recordTime;
+	}
 
-    
-    public void setRecordTime(Date recordTime) {
-        this.recordTime = recordTime;
-    }
+	public void setRecordTime(Date recordTime) {
+		this.recordTime = recordTime;
+	}
 
-    
-    public Date getRemindTime() {
-        return remindTime;
-    }
+	public Date getRemindTime() {
+		return remindTime;
+	}
 
-    
-    public void setRemindTime(Date remindTime) {
-        this.remindTime = remindTime;
-    }
+	public void setRemindTime(Date remindTime) {
+		this.remindTime = remindTime;
+	}
 }

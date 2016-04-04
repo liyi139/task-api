@@ -24,6 +24,20 @@
 		from ${SCHEMA_TASK}.task_log
 		where LOG_ID = #{logId,jdbcType=VARCHAR}
 	</select>
+	<select id="selectByTaskId" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from ${SCHEMA_TASK}.task_log
+		where TASK_ID = #{taskId,jdbcType=VARCHAR}
+		<if test="stateItems!= null">
+			and OPERATE_TYPE in 
+			<foreach item="item" index="index" collection="stateItems" open="(" separator="," close=")">  
+			 #{item}  
+			</foreach>
+		</if>
+		order by OPERATE_TIME desc
+	</select>
 	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
 
 		delete from

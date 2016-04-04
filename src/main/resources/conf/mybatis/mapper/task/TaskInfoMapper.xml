@@ -3,7 +3,6 @@
 <mapper namespace="com.rtmap.apistore.interfaces.taskland.dao.TaskInfoDao">
 	<resultMap id="BaseResultMap"
 		type="com.rtmap.apistore.interfaces.taskland.entity.TaskInfo">
-
 		<id column="TASK_ID" jdbcType="VARCHAR" property="taskId" />
 		<result column="TASK_NAME" jdbcType="VARCHAR" property="taskName" />
 		<result column="TASK_CONT" jdbcType="VARCHAR" property="taskCont" />
@@ -26,8 +25,14 @@
 		<result column="LFT" jdbcType="INTEGER" property="lft" />
 		<result column="RGT" jdbcType="INTEGER" property="rgt" />
 	</resultMap>
-	<sql id="Base_Column_List">
 
+	<resultMap type="com.rtmap.apistore.interfaces.taskland.bean.TaskInfoBean"
+		id="BaseResultMap2" extends="BaseResultMap">
+		<result column="SUB_TASK_IDS" jdbcType="String" property="subTaskIds" />
+		<result column="SUB_COUNT" jdbcType="INTEGER" property="subCount" />
+		<result column="SUB_PROCESS_COUNT" jdbcType="INTEGER" property="subProcessCount" />
+	</resultMap>
+	<sql id="Base_Column_List">
 		TASK_ID, TASK_NAME, TASK_CONT, TASK_STATUS, TASK_TYPE,
 		TASK_PRIORITY,
 		TASK_RELATE,
@@ -38,13 +43,42 @@
 		CREATE_TIME, MODIFIER, MODIFY_TIME, LFT, RGT
 	</sql>
 	<select id="selectByPrimaryKey" parameterType="java.lang.String"
-		resultMap="BaseResultMap">
-
-		select
+		resultMap="BaseResultMap2">
+		<![CDATA[
+		SELECT
+			<include refid="Base_Column_List" />,
+			GROUP_CONCAT(C.TASK_ID) AS SUB_TASK_IDS,
+			COUNT(C.TASK_ID) AS SUB_COUNT,
+			SUM(IF(C.TASK_STATUS<3,1,0) AS SUB_PROCESS_COUNT
+		FROM ${SCHEMA_TASK}.TASK_INFO P
+		LEFT OUTER JOIN
+		${SCHEMA_TASK}.TASK_INFO C
+		ON P.TASK_PID=C.TASK_ID
+		WHERE P.TASK_ID = #{taskId,jdbcType=VARCHAR}
+		  AND P.TASK_STATUS > 0
+		GROUP BY
+		]]>
 		<include refid="Base_Column_List" />
-		from ${SCHEMA_TASK}.TASK_INFO
-		where TASK_ID =
-		#{taskId,jdbcType=VARCHAR}
+		order by P.MODIFY_TIME DESC
+	</select>
+	<select id="selectByTaskPid" parameterType="java.lang.String"
+		resultMap="BaseResultMap2">
+		<![CDATA[
+		SELECT
+			<include refid="Base_Column_List" />,
+			GROUP_CONCAT(C.TASK_ID) AS SUB_TASK_IDS,
+			COUNT(C.TASK_ID) AS SUB_COUNT,
+			SUM(IF(C.TASK_STATUS<3,1,0) AS SUB_PROCESS_COUNT
+		FROM ${SCHEMA_TASK}.TASK_INFO P
+		LEFT OUTER JOIN
+		${SCHEMA_TASK}.TASK_INFO C
+		ON P.TASK_PID=C.TASK_ID
+		WHERE P.TASKP_ID = #{taskId,jdbcType=VARCHAR}
+		  AND P.TASK_STATUS > 0
+		GROUP BY
+		]]>
+		<include refid="Base_Column_List" />
+		order by P.MODIFY_TIME DESC
 	</select>
 	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
 

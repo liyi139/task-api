@@ -10,6 +10,14 @@
 	<sql id="Base_Column_List">
 		TASK_ID, FOLLOWER, FOLLOW_TIME
 	</sql>
+	<select id="selectByTaskId" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from ${SCHEMA_TASK}.TASK_FOLLOW
+		where TASK_ID =
+		#{taskId,jdbcType=VARCHAR}
+	</select>
 	<delete id="delete" parameterType="java.lang.String">
 		DELETE FROM
 		${SCHEMA_TASK}.TASK_FOLLOW
@@ -26,8 +34,10 @@
 		FROM DUAL
 		WHERE NOT EXISTS (
 		SELECT * FROM ${SCHEMA_TASK}.TASK_FOLLOW
-		WHERE TASK_ID=#{taskId,jdbcType=VARCHAR}
-		AND FOLLOWER=#{follower,jdbcType=VARCHAR}
+		WHERE
+		TASK_ID=#{taskId,jdbcType=VARCHAR}
+		AND
+		FOLLOWER=#{follower,jdbcType=VARCHAR}
 		)
 	</insert>
 </mapper>

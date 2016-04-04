@@ -1,7 +1,7 @@
 package com.rtmap.apistore.interfaces.taskland.enums;
 
 public enum TaskStatusEnum {
-	WAITING(1, "未开始"), PROCESSING(2, "进行中"), FINISH(3, "已完成"), REFUSE(4, "已拒绝"), CANCEL(5, "已取消"), DELETE(6, "已删除");
+	WAITING(1, "未开始"), PROCESSING(2, "进行中"), FINISH(3, "已完成"), REFUSE(4, "已拒绝"), CANCEL(5, "已取消"), DELETE(-1, "已删除");
 
 	TaskStatusEnum(int code, String desc) {
 		this.code = code;

@@ -18,7 +18,7 @@ import com.rtmap.apistore.interfaces.taskland.service.TaskStatService;
  *
  */
 @Controller
-@RequestMapping("/taskland")
+@RequestMapping("/taskland/v1.0/")
 public class TaskStatController {
 	private final static Logger logger = LoggerFactory.getLogger(TaskStatController.class);
 	@Autowired

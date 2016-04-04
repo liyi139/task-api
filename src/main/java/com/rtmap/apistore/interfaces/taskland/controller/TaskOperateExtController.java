@@ -22,7 +22,7 @@ import com.rtmap.apistore.interfaces.taskland.service.TaskOperateService;
  *
  */
 @Controller
-@RequestMapping("/taskland/v1")
+@RequestMapping("/taskland/v1.0/")
 public class TaskOperateExtController {
 	private final static Logger logger = LoggerFactory.getLogger(TaskOperateExtController.class);
 	@Autowired

@@ -16,7 +16,7 @@ import com.rtmap.apistore.interfaces.taskland.service.TaskQueryService;
  * 任务田，任务查询
  */
 @Controller
-@RequestMapping("/taskland")
+@RequestMapping("/taskland/v1.0/")
 public class TaskListController {
 	private final static Logger logger = LoggerFactory.getLogger(TaskListController.class);
 	@Autowired

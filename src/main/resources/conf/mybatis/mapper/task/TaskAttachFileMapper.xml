@@ -25,6 +25,14 @@
 		where ATTACH_ID =
 		#{attachId,jdbcType=VARCHAR}
 	</select>
+	<select id="selectByTaskId" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from ${SCHEMA_TASK}.task_attach_file
+		where TASK_ID =
+		#{taskId,jdbcType=VARCHAR} order by OPERATE_TIME desc
+	</select>
 	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
 
 		delete from

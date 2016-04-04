@@ -58,7 +58,7 @@ public class TaskOperateServiceImpl implements TaskOperateService {
 	private TaskParticipantDao taskParticipantDao;
 
 	public String addTask(TaskInfoBean taskInfoBean, String userId) {
-		return addTask("-1", taskInfoBean, userId);
+		return addTask(TasklandConstant.TASK_PID_ROOT, taskInfoBean, userId);
 	}
 
 	@Override
@@ -71,10 +71,13 @@ public class TaskOperateServiceImpl implements TaskOperateService {
 		taskInfoBean.setRemindMode(this.correctRemindMode(taskInfoBean.getRemindMember()));
 		taskInfoBean.setTaskPriority(this.correctTaskPriority(taskInfoBean.getTaskPriority()));
 		taskInfoBean.setTaskStatus(this.correctTaskStatus(taskInfoBean.getTaskStatus(), taskInfoBean.getBeginDate()));
-		logger.trace("添加任务{}", taskInfoBean.toString());
+		logger.trace("创建任务{}", taskInfoBean.toString());
 		this.taskInfoDao.insert(taskInfoBean);
-		logger.trace("记录添加任务操作日志,taskId:{}", taskId);
-		this.insertOperateLog(taskId, taskPid.equals("-1") ? TaskOperTypeEnum.CREATE : TaskOperTypeEnum.CREATE_SUB,
+		logger.trace("添加任务流转记录，TaskId:{},Assigner:{},Handler:{}",
+				new Object[] { taskId, userId, taskInfoBean.getTaskHandler() });
+		this.addAssignTaskFlow(taskId, taskInfoBean.getTaskHandler(), null, userId, true);
+		this.insertOperateLog(taskId,
+				taskPid.equals(TasklandConstant.TASK_PID_ROOT) ? TaskOperTypeEnum.CREATE : TaskOperTypeEnum.CREATE_SUB,
 				taskInfoBean.getCreator());
 		return taskId;
 	}
@@ -84,8 +87,8 @@ public class TaskOperateServiceImpl implements TaskOperateService {
 		logger.trace("删除任务,taskId:{}", taskId);
 		boolean isSuccess = this.taskInfoDao.deleteByPrimaryKey(taskId) == 1;
 		if (isSuccess) {
-			this.insertOperateLog(taskId, taskPid.equals("-1") ? TaskOperTypeEnum.DELETE : TaskOperTypeEnum.DELETE_SUB,
-					userId);
+			this.insertOperateLog(taskId, taskPid.equals(TasklandConstant.TASK_PID_ROOT) ? TaskOperTypeEnum.DELETE
+					: TaskOperTypeEnum.DELETE_SUB, userId);
 		} else {
 			logger.error("删除任务失败！任务编码[{}]不存在！", taskId);
 			throw new BaseRuntimeException("任务编码[" + taskId + "]不存在！");
@@ -95,7 +98,7 @@ public class TaskOperateServiceImpl implements TaskOperateService {
 
 	@Override
 	public boolean delTask(String taskId, String userId) {
-		return delTask("-1", taskId, userId);
+		return delTask(TasklandConstant.TASK_PID_ROOT, taskId, userId);
 	}
 
 	@Override
@@ -148,6 +151,10 @@ public class TaskOperateServiceImpl implements TaskOperateService {
 
 	@Override
 	public boolean addAssignTaskFlow(String taskId, String handler, String comment, String userId) {
+		return addAssignTaskFlow(taskId, handler, comment, userId, false);
+	}
+
+	private boolean addAssignTaskFlow(String taskId, String handler, String comment, String userId, boolean isCreate) {
 		TaskFlow taskFlow = new TaskFlow();
 		taskFlow.setTaskId(taskId);
 		taskFlow.setTaskHandler(handler);
@@ -156,8 +163,12 @@ public class TaskOperateServiceImpl implements TaskOperateService {
 		logger.trace("任务指派,taskId:{},{}", new Object[] { taskId, handler });
 		boolean isSuccess = this.taskFlowDao.insert(taskFlow) == 1;
 		if (isSuccess) {
-			this.insertComment(taskId, userId, comment, TaskOperTypeEnum.ASSIGN, taskFlow.getFlowId());
-			this.insertOperateLog(taskId, TaskOperTypeEnum.ASSIGN, userId + "->" + handler, userId);
+			if (StringUtils.isNotEmpty(comment)) {
+				this.insertComment(taskId, userId, comment, TaskOperTypeEnum.ASSIGN, taskFlow.getFlowId());
+			}
+			if (!isCreate) {
+				this.insertOperateLog(taskId, TaskOperTypeEnum.ASSIGN, userId + "->" + handler, userId);
+			}
 		}
 		return isSuccess;
 	}
@@ -173,7 +184,8 @@ public class TaskOperateServiceImpl implements TaskOperateService {
 		taskRemind.setRemindUser(userId);
 		logger.trace("添加任务催办,taskId:{},{}", new Object[] { taskId, comment });
 		this.taskRemindDao.insert(taskRemind);
-		this.insertOperateLog(taskId, TaskOperTypeEnum.URGE, StringUtils.abbreviate(comment, 100), userId);
+		this.insertOperateLog(taskId, TaskOperTypeEnum.URGE,
+				StringUtils.abbreviate(comment, TasklandConstant.LOG_CONTENT_MAX_LENGTH), userId);
 	}
 
 	@Override
@@ -201,7 +213,8 @@ public class TaskOperateServiceImpl implements TaskOperateService {
 	@Override
 	public String addTaskComment(String taskId, String comment, String userId) {
 		String commentId = this.insertComment(taskId, userId, comment, TaskOperTypeEnum.VIEW);
-		this.insertOperateLog(taskId, TaskOperTypeEnum.ADD_COMMENT, StringUtils.abbreviate(comment, 100), userId);
+		this.insertOperateLog(taskId, TaskOperTypeEnum.ADD_COMMENT,
+				StringUtils.abbreviate(comment, TasklandConstant.LOG_CONTENT_MAX_LENGTH), userId);
 		return commentId;
 
 	}
@@ -285,8 +298,8 @@ public class TaskOperateServiceImpl implements TaskOperateService {
 		if (StringUtils.isNotEmpty(operateCont)) {
 			tasklog.setOperateCont(operateType.getDesc() + ":" + operateCont);
 		}
-		logger.trace("记录任务操作[{}]日志,logId:{},taskId:{}",
-				new Object[] { operateType.getDesc(), tasklog.getLogId(), taskId });
+		logger.trace("记录任务操作[{}]日志,LogId:{},TaskId:{},Content:{}",
+				new Object[] { operateType.getDesc(), tasklog.getLogId(), taskId, operateCont });
 		this.taskLogDao.insert(tasklog);
 	}
 

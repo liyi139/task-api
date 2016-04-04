@@ -6,7 +6,7 @@
 		<artifactId>api-store-server</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>api-store-task</artifactId>
+	<artifactId>api-store-taskland</artifactId>
 	<description>任务田服务</description>
 	<dependencies>
 		<dependency>

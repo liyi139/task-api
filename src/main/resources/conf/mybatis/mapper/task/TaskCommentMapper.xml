@@ -14,7 +14,8 @@
 	</resultMap>
 	<sql id="Base_Column_List">
 
-		COMMENT_ID, TASK_ID, FLOW_ID, REPLY_TYPE, COMMENTS, REPLIER, REPLY_TIME
+		COMMENT_ID, TASK_ID, FLOW_ID, REPLY_TYPE, COMMENTS,
+		REPLIER, REPLY_TIME
 	</sql>
 	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
 		parameterType="java.lang.String">
@@ -22,22 +23,37 @@
 		select
 		<include refid="Base_Column_List" />
 		from ${SCHEMA_TASK}.task_comment
-		where COMMENT_ID = #{commentId,jdbcType=VARCHAR}
+		where COMMENT_ID =
+		#{commentId,jdbcType=VARCHAR}
+	</select>
+	<select id="selectByTaskId" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+
+		select
+		<include refid="Base_Column_List" />
+		from ${SCHEMA_TASK}.task_comment
+		where TASK_ID =
+		#{taskId,jdbcType=VARCHAR} ORDER BY REPLY_TIME desc
 	</select>
 	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
 
-		delete from ${SCHEMA_TASK}.task_comment
-		where COMMENT_ID = #{commentId,jdbcType=VARCHAR}
+		delete from
+		${SCHEMA_TASK}.task_comment
+		where COMMENT_ID =
+		#{commentId,jdbcType=VARCHAR}
 	</delete>
 	<insert id="insert"
 		parameterType="com.rtmap.apistore.interfaces.taskland.entity.TaskComment">
 
-		insert into ${SCHEMA_TASK}.task_comment (COMMENT_ID, TASK_ID, FLOW_ID,
+		insert into ${SCHEMA_TASK}.task_comment (COMMENT_ID,
+		TASK_ID, FLOW_ID,
 		REPLY_TYPE, COMMENTS, REPLIER,
 		REPLY_TIME)
-		values (#{commentId,jdbcType=VARCHAR}, #{taskId,jdbcType=VARCHAR},
+		values
+		(#{commentId,jdbcType=VARCHAR}, #{taskId,jdbcType=VARCHAR},
 		#{flowId,jdbcType=VARCHAR},
-		#{replyType,jdbcType=SMALLINT}, #{comments,jdbcType=VARCHAR}, #{replier,jdbcType=VARCHAR},
+		#{replyType,jdbcType=SMALLINT},
+		#{comments,jdbcType=VARCHAR}, #{replier,jdbcType=VARCHAR},
 		now())
 	</insert>
 	<update id="updateByPrimaryKeySelective"
@@ -68,10 +84,12 @@
 		parameterType="com.rtmap.apistore.interfaces.taskland.entity.TaskComment">
 
 		update ${SCHEMA_TASK}.task_comment
-		set TASK_ID = #{taskId,jdbcType=VARCHAR},
+		set TASK_ID =
+		#{taskId,jdbcType=VARCHAR},
 		FLOW_ID = #{flowId,jdbcType=VARCHAR},
 		REPLY_TYPE = #{replyType,jdbcType=SMALLINT},
-		COMMENTS = #{comments,jdbcType=VARCHAR},
+		COMMENTS =
+		#{comments,jdbcType=VARCHAR},
 		REPLIER = #{replier,jdbcType=VARCHAR},
 		REPLY_TIME = now()
 		where COMMENT_ID = #{commentId,jdbcType=VARCHAR}

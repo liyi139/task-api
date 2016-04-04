@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.rtmap.apistore.core.base.test.BaseSpringTest;
-import com.rtmap.apistore.core.holder.SpringContextHolder;
 import com.rtmap.apistore.interfaces.taskland.bean.TaskInfoBean;
 import com.rtmap.apistore.interfaces.taskland.enums.TaskTypeEnum;
 import com.rtmap.apistore.interfaces.taskland.service.TaskOperateService;
@@ -24,7 +23,6 @@ public class TaskOperateServiceTest extends BaseSpringTest {
 		this.testFinishTask(taskInfoBean.getTaskId());
 		this.testAssignTask(taskInfoBean.getTaskId());
 		this.testDelTask(taskInfoBean.getTaskId());
-		System.out.println(SpringContextHolder.getBean("DIM"));
 	}
 
 	private TaskInfoBean testAddTask() {

@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.rtmap.apistore.core.base.entity.IEntity;
 
-public class TaskRemind implements IEntity{
+public class TaskRemind implements IEntity {
 
 	private static final long serialVersionUID = 7461558325921008239L;
 

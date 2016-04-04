@@ -21,7 +21,7 @@ import com.rtmap.apistore.interfaces.taskland.service.TaskOperateService;
  * 任务田，任务操作
  */
 @Controller
-@RequestMapping("/taskland/v1/")
+@RequestMapping("/taskland/v1.0/")
 public class TaskOperateController {
 	private final static Logger logger = LoggerFactory.getLogger(TaskOperateController.class);
 	@Autowired

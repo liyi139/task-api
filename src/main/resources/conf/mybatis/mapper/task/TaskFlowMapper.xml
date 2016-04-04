@@ -23,6 +23,15 @@
 		where FLOW_ID =
 		#{flowId,jdbcType=VARCHAR}
 	</select>
+	<select id="selectByTaskId" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+
+		select
+		<include refid="Base_Column_List" />
+		from ${SCHEMA_TASK}.task_flow
+		where TASK_ID =
+		#{taskId,jdbcType=VARCHAR} order by ASSIGN_TIME ASC
+	</select>
 	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
 
 		delete from
