@@ -10,7 +10,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.rtmap.apistore.interfaces.taskland.service.TaskInfoService;
+import com.google.common.collect.Lists;
+import com.rtmap.apistore.core.web.page.PageList;
+import com.rtmap.apistore.core.web.page.PageQuery;
+import com.rtmap.apistore.core.web.page.SortRule;
+import com.rtmap.apistore.interfaces.taskland.bean.TaskInfoBean;
+import com.rtmap.apistore.interfaces.taskland.bean.TaskQueryParamBean;
+import com.rtmap.apistore.interfaces.taskland.enums.TaskStatusEnum;
+import com.rtmap.apistore.interfaces.taskland.service.TaskListService;
 
 /**
  * 任务田，任务查询
@@ -21,135 +28,121 @@ public class TaskListController {
 	@SuppressWarnings("unused")
 	private final static Logger logger = LoggerFactory.getLogger(TaskListController.class);
 	@Autowired
-	private TaskInfoService taskQueryService;
+	private TaskListService taskListService;
 
 	/**
-	 * 查询任务列表
+	 * 全部任务列表查询接口
+	 * 
+	 * @param state
+	 * @param period
+	 * @param queryParam
+	 * @return
 	 */
-	private Object _list(String userId, String[] taskTypeAry, String[] taskStatusAry, String sort, String order,
-			Integer limit, Integer curPage) {
+	@RequestMapping(value = { "/tasks/", "/tasks/{state:processing|finished}/",
+			"/tasks/{state:processing}/{period:today|tomorrow|other|expired}",
+			"/tasks/{state:finished}/{period:today|yesterday|week|month|other}" }, method = { RequestMethod.GET })
+	@ResponseBody
+	public PageList<TaskInfoBean> getAllTasks(@PathVariable String userId, @PathVariable String state,
+			@PathVariable String period, @RequestParam TaskQueryParamBean queryParam) {
 		return null;
 	}
 
 	/**
-	 * 搜索任务列表
+	 * 用户全部任务列表查询接口
+	 * 
+	 * @param userId
+	 * @param state
+	 * @param period
+	 * @param queryParam
+	 * @return
 	 */
-	private Object _search(String userId, String keywords, String sort, String order, Integer limit, Integer curPage) {
+	@RequestMapping(value = { "/users/{userId}/tasks/", "/users/{userId}/tasks/{state:processing|finished}/",
+			"/users/{userId}/tasks/{state:processing}/{period:today|tomorrow|other|expired}",
+			"/users/{userId}/tasks/{state:finished}/{period:today|yesterday|week|month|other}" }, method = {
+					RequestMethod.GET })
+	@ResponseBody
+	public PageList<TaskInfoBean> getUserAllTasks(@PathVariable String userId, @PathVariable String state,
+			@PathVariable String period, @RequestParam TaskQueryParamBean queryParam) {
 		return null;
 	}
 
 	/**
-	 * 任务搜索接口（按用户权限查询）
+	 * 用户发起任务列表查询接口
+	 * 
+	 * @param userId
+	 * @param state
+	 * @param period
+	 * @param queryParam
+	 * @return
 	 */
-	@RequestMapping(value = "/usrs/{userId}/tasks/search", method = { RequestMethod.GET })
+	@RequestMapping(value = { "/users/{userId}/tasks/origin/",
+			"/users/{userId}/tasks/origin/{state:processing|finished}/",
+			"/users/{userId}/tasks/origin/{state:processing}/{period:today|tomorrow|other|expired}",
+			"/users/{userId}/tasks/origin/{state:finished}/{period:today|yesterday|week|month|other}" }, method = {
+					RequestMethod.GET })
 	@ResponseBody
-	public Object search(@RequestParam(required = false, value = "userId") String userId,
-			@RequestParam(required = true, value = "q") String keywords,
-			@RequestParam(required = false, defaultValue = "MODIFY_TIME", value = "sort") String sort,
-			@RequestParam(required = false, defaultValue = "DESC", value = "order") String order,
-			@RequestParam(required = false, value = "limit") Integer limit,
-			@RequestParam(required = false, value = "curPage") Integer curPage) {
-		return _search(userId, keywords, sort, order, limit, curPage);
+	public PageList<TaskInfoBean> getUserOriginTasks(@PathVariable String userId, @PathVariable String state,
+			@PathVariable String period, @RequestParam TaskQueryParamBean queryParam) {
+		return null;
 	}
 
 	/**
-	 * 任务搜索接口
+	 * 用户指派任务列表查询接口
+	 * 
+	 * @param userId
+	 * @param state
+	 * @param period
+	 * @param queryParam
+	 * @return
 	 */
-	@RequestMapping(value = "/tasks/search", method = { RequestMethod.GET })
+	@RequestMapping(value = { "/users/{userId}/tasks/assign/",
+			"/users/{userId}/tasks/assign/{state:processing|finished}/",
+			"/users/{userId}/tasks/assign/{state:processing}/{period:today|tomorrow|other|expired}",
+			"/users/{userId}/tasks/assign/{state:finished}/{period:today|yesterday|week|month|other}" }, method = {
+					RequestMethod.GET })
 	@ResponseBody
-	public Object search(@RequestParam(required = true, value = "q") String keywords,
-			@RequestParam(required = false, defaultValue = "MODIFY_TIME", value = "sort") String sort,
-			@RequestParam(required = false, defaultValue = "DESC", value = "order") String order,
-			@RequestParam(required = false, value = "limit") Integer limit,
-			@RequestParam(required = false, value = "curPage") Integer curPage) {
-		return _search(null, keywords, sort, order, limit, curPage);
+	public PageList<TaskInfoBean> getUserAssignTasks(@PathVariable String userId, @PathVariable String state,
+			@PathVariable String period, @RequestParam TaskQueryParamBean queryParam) {
+		return null;
 	}
 
 	/**
-	 * 查询任务列表接口
+	 * 用户关注任务列表查询接口
+	 * 
+	 * @param userId
+	 * @param state
+	 * @param period
+	 * @param queryParam
+	 * @return
 	 */
-	@RequestMapping(value = "/tasks", method = { RequestMethod.GET })
+	@RequestMapping(value = { "/users/{userId}/tasks/follow/",
+			"/users/{userId}/tasks/follow/{state:processing|finished}/",
+			"/users/{userId}/tasks/follow/{state:processing}/{period:today|tomorrow|other|expired}",
+			"/users/{userId}/tasks/follow/{state:finished}/{period:today|yesterday|week|month|other}" }, method = {
+					RequestMethod.GET })
 	@ResponseBody
-	public Object list(@RequestParam(required = false, value = "taskType") String[] taskTypeAry,
-			@RequestParam(required = false, value = "taskStatus") String[] taskStatusAry,
-			@RequestParam(required = false, defaultValue = "MODIFY_TIME", value = "sort") String sort,
-			@RequestParam(required = false, defaultValue = "DESC", value = "order") String order,
-			@RequestParam(required = false, value = "limit") Integer limit,
-			@RequestParam(required = false, value = "curPage") Integer curPage) {
-		return _list(null, taskTypeAry, taskStatusAry, sort, order, limit, curPage);
-	}
-
-	/**
-	 * 查询任务列表接口(按用户权限)
-	 */
-	@RequestMapping(value = "/users/{userId}/tasks", method = { RequestMethod.GET })
-	@ResponseBody
-	public Object list(@PathVariable(value = "userId") String userId,
-			@RequestParam(required = false, value = "taskType") String[] taskTypeAry,
-			@RequestParam(required = false, value = "taskStatus") String[] taskStatusAry,
-			@RequestParam(required = false, defaultValue = "MODIFY_TIME", value = "sort") String sort,
-			@RequestParam(required = false, defaultValue = "DESC", value = "order") String order,
-			@RequestParam(required = false, value = "limit") Integer limit,
-			@RequestParam(required = false, value = "curPage") Integer curPage) {
-		return _list(userId, taskTypeAry, taskStatusAry, sort, order, limit, curPage);
-	}
-
-	/**
-	 * 待处理的任务列表查询接口
-	 */
-	@RequestMapping(value = "/users/{userId}/tasks/pendinges", method = { RequestMethod.GET })
-	@ResponseBody
-	public Object listPending(@PathVariable(value = "userId") String userId,
-			@RequestParam(required = false, value = "taskType") String[] taskTypeAry,
-			@RequestParam(required = false, value = "taskStatus") String[] taskStatusAry,
-			@RequestParam(required = false, defaultValue = "MODIFY_TIME", value = "sort") String sort,
-			@RequestParam(required = false, defaultValue = "DESC", value = "order") String order,
-			@RequestParam(required = false, value = "limit") Integer limit,
-			@RequestParam(required = false, value = "curPage") Integer curPage) {
-		return _list(userId, taskTypeAry, taskStatusAry, sort, order, limit, curPage);
+	public PageList<TaskInfoBean> getUserFollowTasks(@PathVariable String userId, @PathVariable String state,
+			@PathVariable String period, @RequestParam TaskQueryParamBean queryParam) {
+		return null;
 	}
 
 	/**
 	 * 用户待处理的任务列表查询接口
+	 * 
+	 * @param userId
+	 * @param state
+	 * @param period
+	 * @param queryParam
+	 * @return
 	 */
-	@RequestMapping(value = "/tasks/pendinges", method = { RequestMethod.GET })
+	@RequestMapping(value = { "/users/{userId}/tasks/pending/",
+			"/users/{userId}/tasks/pending/{state:processing|finished}/",
+			"/users/{userId}/tasks/pending/{state:processing}/{period:today|tomorrow|other|expired}",
+			"/users/{userId}/tasks/pending/{state:finished}/{period:today|yesterday|week|month|other}" }, method = {
+					RequestMethod.GET })
 	@ResponseBody
-	public Object listPending(@RequestParam(required = false, value = "taskType") String[] taskTypeAry,
-			@RequestParam(required = false, value = "taskStatus") String[] taskStatusAry,
-			@RequestParam(required = false, defaultValue = "MODIFY_TIME", value = "sort") String sort,
-			@RequestParam(required = false, defaultValue = "DESC", value = "order") String order,
-			@RequestParam(required = false, value = "limit") Integer limit,
-			@RequestParam(required = false, value = "curPage") Integer curPage) {
-		return _list(null, taskTypeAry, taskStatusAry, sort, order, limit, curPage);
-	}
-
-	/**
-	 * 用户关注的任务列表查询接口
-	 */
-	@RequestMapping(value = "/users/{userId}/tasks/follows", method = { RequestMethod.GET })
-	@ResponseBody
-	public Object listFollow(@PathVariable(value = "userId") String userId,
-			@RequestParam(required = false, value = "taskType") String[] taskTypeAry,
-			@RequestParam(required = false, value = "taskStatus") String[] taskStatusAry,
-			@RequestParam(required = false, defaultValue = "MODIFY_TIME", value = "sort") String sort,
-			@RequestParam(required = false, defaultValue = "DESC", value = "order") String order,
-			@RequestParam(required = false, value = "limit") Integer limit,
-			@RequestParam(required = false, value = "curPage") Integer curPage) {
-		return _list(userId, taskTypeAry, taskStatusAry, sort, order, limit, curPage);
-	}
-
-	/**
-	 * 用户发起的任务列表查询接口
-	 */
-	@RequestMapping(value = "/users/{userId}/tasks/origins", method = { RequestMethod.GET })
-	@ResponseBody
-	public Object listOrigin(@PathVariable(value = "userId") String userId,
-			@RequestParam(required = false, value = "taskType") String[] taskTypeAry,
-			@RequestParam(required = false, value = "taskStatus") String[] taskStatusAry,
-			@RequestParam(required = false, defaultValue = "MODIFY_TIME", value = "sort") String sort,
-			@RequestParam(required = false, defaultValue = "DESC", value = "order") String order,
-			@RequestParam(required = false, value = "limit") Integer limit,
-			@RequestParam(required = false, value = "curPage") Integer curPage) {
-		return _list(userId, taskTypeAry, taskStatusAry, sort, order, limit, curPage);
+	public PageList<TaskInfoBean> getUserPendingTasks(@PathVariable String userId, @PathVariable String state,
+			@PathVariable String period, @RequestParam TaskQueryParamBean queryParam) {
+		return null;
 	}
 }

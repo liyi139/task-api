@@ -11,6 +11,9 @@ import com.rtmap.apistore.interfaces.taskland.entity.TaskAttachFile;
 public interface TaskAttachFileDao {
 
 	int deleteByPrimaryKey(@Param(value = "attachId") String attachId);
+	
+	int deleteByTaskId(@Param(value = "taskId") String taskId);
+	
 
 	int insert(TaskAttachFile taskAttachFile);
 

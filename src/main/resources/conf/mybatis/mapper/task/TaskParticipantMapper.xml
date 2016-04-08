@@ -22,13 +22,20 @@
 		where TASK_ID =
 		#{taskId,jdbcType=VARCHAR}
 	</select>
-	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+	<delete id="delete" parameterType="java.lang.String">
 
 		delete from
 		${SCHEMA_TASK}.task_participant
 		where TASK_ID =
 		#{taskId,jdbcType=VARCHAR} and
 		PARTICIPANT=#{participant,jdbcType=VARCHAR}
+	</delete>
+	<delete id="deleteByTaskId" parameterType="java.lang.String">
+
+		delete from
+		${SCHEMA_TASK}.task_participant
+		where TASK_ID
+		=#{taskId,jdbcType=VARCHAR}
 	</delete>
 	<insert id="insert"
 		parameterType="com.rtmap.apistore.interfaces.taskland.entity.TaskParticipant">

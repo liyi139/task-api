@@ -84,7 +84,7 @@ public class TestTaskOperateService extends BaseSpringTest {
 	}
 
 	public void testDelAttachFile(String taskId, String attachId) {
-		taskOperateService.delAttachFile(taskId, attachId, "ADMIN");
+		taskOperateService.delAttachFile(taskId, new String[] { attachId }, "ADMIN");
 	}
 
 	public String testAddTaskComment(String taskId) {
@@ -92,7 +92,7 @@ public class TestTaskOperateService extends BaseSpringTest {
 	}
 
 	public void testDelTaskComment(String taskId, String commentId) {
-		taskOperateService.delTaskComment(taskId, commentId, "ADMIN");
+		taskOperateService.delTaskComment(taskId, new String[] { commentId }, "ADMIN");
 	}
 
 	public void testAddParticipant(String taskId) {
@@ -100,7 +100,7 @@ public class TestTaskOperateService extends BaseSpringTest {
 	}
 
 	public void testDelParticipant(String taskId) {
-		taskOperateService.delTaskComment(taskId, "DEMO", "ADMIN");
+		taskOperateService.delTaskComment(taskId, new String[] { "DEMO" }, "ADMIN");
 	}
 
 }

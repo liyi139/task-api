@@ -24,6 +24,11 @@
 		WHERE TASK_ID = #{taskId,jdbcType=VARCHAR}
 		AND FOLLOWER = #{follower,jdbcType=VARCHAR}
 	</delete>
+	<delete id="deleteByTaskId" parameterType="java.lang.String">
+		DELETE FROM
+		${SCHEMA_TASK}.TASK_FOLLOW
+		WHERE TASK_ID = #{taskId,jdbcType=VARCHAR}
+	</delete>
 	<insert id="insert" parameterType="java.lang.String">
 		INSERT INTO
 		${SCHEMA_TASK}.TASK_FOLLOW (TASK_ID, FOLLOWER, FOLLOW_TIME)

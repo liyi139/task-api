@@ -1,7 +1,9 @@
 package com.rtmap.apistore.interfaces.taskland.service.impl;
 
+import java.util.Arrays;
 import java.util.Date;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -83,22 +85,26 @@ public class TaskOperServiceImpl implements TaskOperService {
 	}
 
 	@Override
-	public boolean delTask(String taskPid, String taskId, String userId) {
-		logger.trace("删除任务,taskId:{}", taskId);
-		boolean isSuccess = this.taskInfoDao.deleteByPrimaryKey(taskId) == 1;
-		if (isSuccess) {
-			this.insertOperateLog(taskId, taskPid.equals(TasklandConstant.TASK_PID_ROOT) ? TaskOperTypeEnum.DELETE
-					: TaskOperTypeEnum.DELETE_SUB, userId);
-		} else {
-			logger.error("删除任务失败！任务编码[{}]不存在！", taskId);
-			throw new BaseRuntimeException("任务编码[" + taskId + "]不存在！");
+	public boolean delTask(String taskPid, String[] taskIds, String userId) {
+		boolean isSuccess = false;
+		for (String taskId : taskIds) {
+			logger.trace("删除任务,taskId:{}", taskId);
+			isSuccess = this.taskInfoDao.deleteByPrimaryKey(taskId) == 1;
+			if (isSuccess) {
+				this.taskFlowDao.deleteByTaskId(taskId);
+				this.insertOperateLog(taskId, taskPid.equals(TasklandConstant.TASK_PID_ROOT) ? TaskOperTypeEnum.DELETE
+						: TaskOperTypeEnum.DELETE_SUB, userId);
+			} else {
+				logger.error("删除任务失败！任务编码[{}]不存在！", taskId);
+				throw new BaseRuntimeException("任务编码[" + taskId + "]不存在！");
+			}
 		}
 		return isSuccess;
 	}
 
 	@Override
 	public boolean delTask(String taskId, String userId) {
-		return delTask(TasklandConstant.TASK_PID_ROOT, taskId, userId);
+		return delTask(TasklandConstant.TASK_PID_ROOT, new String[] { taskId }, userId);
 	}
 
 	@Override
@@ -203,11 +209,13 @@ public class TaskOperServiceImpl implements TaskOperService {
 	}
 
 	@Override
-	public void delAttachFile(String taskId, String attachId, String userId) {
-		TaskAttachFile attachFile = this.taskAttachFileDao.selectByPrimaryKey(attachId);
-		if (attachFile != null) {
-			this.taskAttachFileDao.deleteByPrimaryKey(attachId);
-			this.insertOperateLog(taskId, TaskOperTypeEnum.DEL_ATTACH, attachFile.getAttachName(), userId);
+	public void delAttachFile(String taskId, String[] attachIds, String userId) {
+		for (String attachId : attachIds) {
+			TaskAttachFile attachFile = this.taskAttachFileDao.selectByPrimaryKey(attachId);
+			if (attachFile != null) {
+				this.taskAttachFileDao.deleteByPrimaryKey(attachId);
+				this.insertOperateLog(taskId, TaskOperTypeEnum.DEL_ATTACH, attachFile.getAttachName(), userId);
+			}
 		}
 	}
 
@@ -221,13 +229,15 @@ public class TaskOperServiceImpl implements TaskOperService {
 	}
 
 	@Override
-	public void delTaskComment(String taskId, String commentId, String userId) {
-		this.taskCommentDao.deleteByPrimaryKey(commentId);
-		TaskComment taskComment = this.taskCommentDao.selectByPrimaryKey(commentId);
-		if (taskComment != null) {
-			this.taskCommentDao.deleteByPrimaryKey(commentId);
-			this.insertOperateLog(taskId, TaskOperTypeEnum.DEL_ATTACH,
-					StringUtils.abbreviate(taskComment.getComments(), 100), userId);
+	public void delTaskComment(String taskId, String[] commentIds, String userId) {
+		for (String commentId : commentIds) {
+			TaskComment taskComment = this.taskCommentDao.selectByPrimaryKey(commentId);
+			if (taskComment != null) {
+				this.taskCommentDao.deleteByPrimaryKey(commentId);
+				this.insertOperateLog(taskId, TaskOperTypeEnum.DEL_ATTACH,
+						StringUtils.abbreviate(taskComment.getComments(), TasklandConstant.LOG_CONTENT_MAX_LENGTH),
+						userId);
+			}
 		}
 	}
 
@@ -242,9 +252,11 @@ public class TaskOperServiceImpl implements TaskOperService {
 	}
 
 	@Override
-	public void delParticipant(String taskId, String participant, String userId) {
-		this.taskParticipantDao.delete(taskId, participant);
-		this.insertOperateLog(taskId, TaskOperTypeEnum.DEL_PARTICIPANT, participant, userId);
+	public void delParticipant(String taskId, String[] participants, String userId) {
+		for (String participant : participants) {
+			this.taskParticipantDao.delete(taskId, participant);
+		}
+		this.insertOperateLog(taskId, TaskOperTypeEnum.DEL_PARTICIPANT, StringUtils.join(participants, ","), userId);
 	}
 
 	private boolean updateTaskStatus(String taskId, String userId, String comment, TaskStatusEnum taskStatus,

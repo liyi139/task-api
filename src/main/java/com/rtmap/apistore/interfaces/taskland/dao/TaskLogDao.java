@@ -12,6 +12,8 @@ public interface TaskLogDao {
 
 	int deleteByPrimaryKey(@Param(value = "logId") String logId);
 
+	int deleteByTaskId(@Param(value = "taskId") String taskId);
+
 	int insert(TaskLog taskLog);
 
 	TaskLog selectByPrimaryKey(@Param(value = "logId") String logId);

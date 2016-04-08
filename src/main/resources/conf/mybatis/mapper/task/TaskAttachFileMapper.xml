@@ -40,6 +40,13 @@
 		where ATTACH_ID =
 		#{attachId,jdbcType=VARCHAR}
 	</delete>
+	<delete id="deleteByTaskId" parameterType="java.lang.String">
+
+		delete from
+		${SCHEMA_TASK}.task_attach_file
+		where TASK_ID =
+		#{taskId,jdbcType=VARCHAR}
+	</delete>
 	<insert id="insert"
 		parameterType="com.rtmap.apistore.interfaces.taskland.entity.TaskAttachFile">
 

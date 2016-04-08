@@ -12,6 +12,8 @@ public interface TaskFlowDao {
 
 	int deleteByPrimaryKey(@Param(value = "flowId") String flowId);
 
+	int deleteByTaskId(@Param(value = "taskId") String taskId);
+
 	int insert(TaskFlow taskFlow);
 
 	TaskFlow selectByPrimaryKey(@Param(value = "flowId") String flowId);

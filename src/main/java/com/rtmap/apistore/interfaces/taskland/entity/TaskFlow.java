@@ -12,7 +12,7 @@ public class TaskFlow implements IEntity {
 
 	private String taskId;
 
-	private String tasAssigner;
+	private String taskAssigner;
 
 	private String taskHandler;
 
@@ -35,11 +35,11 @@ public class TaskFlow implements IEntity {
 	}
 
 	public String getTasAssigner() {
-		return tasAssigner;
+		return taskAssigner;
 	}
 
 	public void setTasAssigner(String tasAssigner) {
-		this.tasAssigner = tasAssigner == null ? null : tasAssigner.trim();
+		this.taskAssigner = tasAssigner == null ? null : tasAssigner.trim();
 	}
 
 	public String getTaskHandler() {

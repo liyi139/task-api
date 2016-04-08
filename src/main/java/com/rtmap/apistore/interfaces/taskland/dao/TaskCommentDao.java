@@ -11,6 +11,8 @@ import com.rtmap.apistore.interfaces.taskland.entity.TaskComment;
 public interface TaskCommentDao {
 
 	int deleteByPrimaryKey(@Param(value = "commentId") String commentId);
+	
+	int deleteByTaskId(@Param(value = "taskId") String taskId);
 
 	int insert(TaskComment taskComment);
 

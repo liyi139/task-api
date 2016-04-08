@@ -11,6 +11,8 @@ import com.rtmap.apistore.interfaces.taskland.entity.TaskFollow;
 public interface TaskFollowDao {
 
 	int delete(@Param(value = "taskId") String taskId, @Param(value = "follower") String follower);
+	
+	int deleteByTaskId(@Param(value = "taskId") String taskId);
 
 	int insert(@Param(value = "taskId") String taskId, @Param(value = "follower") String follower);
 

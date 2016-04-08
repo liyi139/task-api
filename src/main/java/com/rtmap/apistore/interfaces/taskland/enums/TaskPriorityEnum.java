@@ -1,7 +1,7 @@
 package com.rtmap.apistore.interfaces.taskland.enums;
 
 public enum TaskPriorityEnum {
-	COMMON(1, "正常"), URGENT(2, "紧急"), Very_URGENT(3, "非常紧急");
+	COMMON(1, "正常"), URGENT(2, "紧急"), VERY_URGENT(3, "非常紧急");
 	private int code;
 	private String desc;
 

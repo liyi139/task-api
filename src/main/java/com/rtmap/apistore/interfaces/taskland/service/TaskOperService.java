@@ -39,7 +39,7 @@ public interface TaskOperService {
 	 * @param userId
 	 * @return
 	 */
-	public boolean delTask(String taskPid, String taskId, String userId);
+	public boolean delTask(String taskPid, String[] taskId, String userId);
 
 	/**
 	 * 任务标记取消
@@ -130,7 +130,7 @@ public interface TaskOperService {
 	 * @param attachId
 	 * @param userId
 	 */
-	public void delAttachFile(String taskId, String attachId, String userId);
+	public void delAttachFile(String taskId, String[] attachId, String userId);
 
 	/**
 	 * 添加任务评论
@@ -149,7 +149,7 @@ public interface TaskOperService {
 	 * @param commentId
 	 * @param userId
 	 */
-	public void delTaskComment(String taskId, String commentId, String userId);
+	public void delTaskComment(String taskId, String[] commentId, String userId);
 
 	/**
 	 * 添加任务参与人
@@ -168,6 +168,6 @@ public interface TaskOperService {
 	 * @param participant
 	 * @param userId
 	 */
-	public void delParticipant(String taskId, String participant, String userId);
+	public void delParticipant(String taskId, String[] participant, String userId);
 
 }

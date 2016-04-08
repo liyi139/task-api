@@ -2,9 +2,12 @@ package com.rtmap.apistore.interfaces.taskland.service;
 
 import com.rtmap.apistore.core.web.page.PageList;
 import com.rtmap.apistore.core.web.page.PageQuery;
+import com.rtmap.apistore.interfaces.taskland.bean.TaskInfoBean;
 
 public interface TaskListService {
 	/**
+	 * 根据任务类型、任务状态查询任务列表
+	 * 
 	 * @param userId
 	 * @param taskTypeAry
 	 * @param taskStatusAry
@@ -13,10 +16,12 @@ public interface TaskListService {
 	 * @param pageQuery
 	 * @return
 	 */
-	public PageList list(String userId, String[] taskTypeAry, String[] taskStatusAry, String sort, String order,
+	public PageList<TaskInfoBean> getListByCond(String userId, Integer[] taskTypeAry, Integer[] taskStatusAry,
 			PageQuery pageQuery);
 
 	/**
+	 * 根据任务标题模糊查询任务列表
+	 * 
 	 * @param userId
 	 * @param keywords
 	 * @param sort
@@ -24,5 +29,5 @@ public interface TaskListService {
 	 * @param pageQuery
 	 * @return
 	 */
-	public PageList search(String userId, String keywords, String sort, String order, PageQuery pageQuery);
+	public PageList<TaskInfoBean> searchByKeywords(String userId, String keywords, PageQuery pageQuery);
 }

@@ -55,7 +55,7 @@ public class TaskOperateExtController {
 	@RequestMapping(value = "/tasks/{taskId}/comments/{commentId}", method = { RequestMethod.DELETE })
 	@ResponseBody
 	public void deleteComment(@PathVariable(value = "taskId") String taskId,
-			@PathVariable(value = "commentId") String commentId,
+			@PathVariable(value = "commentId") String[] commentId,
 			@RequestParam(required = true, value = "userId") String userId) {
 		this.taskOperateService.delTaskComment(taskId, commentId, userId);
 	}
@@ -88,7 +88,7 @@ public class TaskOperateExtController {
 	@RequestMapping(value = "/tasks/{taskId}/attaches", method = { RequestMethod.DELETE })
 	@ResponseBody
 	public void deleteAttach(@PathVariable(value = "taskId") String taskId,
-			@PathVariable(value = "attachId") String attachId,
+			@PathVariable(value = "attachId") String[] attachId,
 			@RequestParam(required = true, value = "userId") String userId) {
 		this.taskOperateService.delAttachFile(taskId, attachId, userId);
 	}
@@ -118,8 +118,39 @@ public class TaskOperateExtController {
 	@RequestMapping(value = "/tasks/{taskId}/attaches/{subTaskId}", method = { RequestMethod.DELETE })
 	@ResponseBody
 	public void deleteSubTask(@PathVariable(value = "taskPid") String taskPid,
-			@PathVariable(value = "subTaskId") String taskId,
+			@PathVariable(value = "subTaskId") String[] taskId,
 			@RequestParam(required = true, value = "userId") String userId) {
 		this.taskOperateService.delTask(taskPid, taskId, userId);
 	}
+
+	/**
+	 * 添加参与人
+	 * 
+	 * @param taskId
+	 * @param participant
+	 * @param userId
+	 */
+	@RequestMapping(value = "/tasks/{taskId}/participants", method = { RequestMethod.POST })
+	@ResponseBody
+	public void addParticipant(@PathVariable(value = "taskId") String taskId,
+			@RequestParam(required = true, value = "participant") String participant,
+			@RequestParam(required = true, value = "userId") String userId) {
+		this.taskOperateService.addParticipant(taskId, participant, userId);
+	}
+
+	/**
+	 * 删除参与人
+	 * 
+	 * @param taskId
+	 * @param participant
+	 * @param userId
+	 */
+	@RequestMapping(value = "/tasks/{taskId}/participants", method = { RequestMethod.POST })
+	@ResponseBody
+	public void delParticipant(@PathVariable(value = "taskId") String taskId,
+			@RequestParam(required = true, value = "participant") String[] participant,
+			@RequestParam(required = true, value = "userId") String userId) {
+		this.taskOperateService.delParticipant(taskId, participant, userId);
+	}
+
 }
