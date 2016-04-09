@@ -78,6 +78,32 @@
 		GROUP BY P.TASK_ID
 		order by P.MODIFY_TIME DESC
 	</select>
+	<select id="selectUserRoleByTaskId" parameterType="java.lang.String"
+		resultMap="String">
+		select 
+		    case
+		        when (ASSIGNER > 0 and HANDLER = 0) then 'ORIGINATOR'
+		        when (ASSIGNER > 0 and HANDLER > 0) then 'ASSIGNER'
+		        when (ASSIGNER = 0 and HANDLER > 0) then 'HANDLER'
+		        when (FOLLOWER > 0) then 'FOLLOWER'
+		        else null
+		    end as ROLE
+		from
+		    (select 
+		        count(IF(t1.TAS_ASSIGNER = #{userId,jdbcType=VARCHAR}, 1, null)) ASSIGNER,
+		            count(IF(t1.TASK_HANDLER = #{userId,jdbcType=VARCHAR}, 1, null)) HANDLER,
+		            count(t2.FOLLOWER) FOLLOWER
+		    from
+		        ${SCHEMA_TASK}.task_flow t1
+		    left outer join ${SCHEMA_TASK}.task_follow t2 ON t1.TASK_ID = t2.TASK_ID
+		        and t2.task_id = #{taskId,jdbcType=VARCHAR}
+		        and t2.FOLLOWER =#{userId,jdbcType=VARCHAR}
+		    where
+		        t1.TASK_ID = #{taskId,jdbcType=VARCHAR}
+		            and (t1.TAS_ASSIGNER = #{userId,jdbcType=VARCHAR}
+		            or t1.TASK_HANDLER = #{userId,jdbcType=VARCHAR})
+		    group by t1.TASK_ID) T
+	</select>
 	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
 
 		delete from

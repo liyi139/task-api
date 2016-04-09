@@ -22,6 +22,7 @@ import com.rtmap.apistore.interfaces.taskland.entity.TaskFlow;
 import com.rtmap.apistore.interfaces.taskland.entity.TaskInfo;
 import com.rtmap.apistore.interfaces.taskland.entity.TaskLog;
 import com.rtmap.apistore.interfaces.taskland.entity.TaskParticipant;
+import com.rtmap.apistore.interfaces.taskland.enums.TaskFlowRoleEnum;
 import com.rtmap.apistore.interfaces.taskland.service.TaskInfoService;
 
 /**
@@ -151,18 +152,17 @@ public class TaskInfoController {
 	}
 
 	/**
-	 * 获取用户在任务中的角色(orginer:发起人、assigner:指派人、follower:关注人、handler:处理人、participant
-	 * :参与人)
+	 * 获取用户在任务中的角色(TaskFlowRoleEnum)
 	 * 
 	 * @param userId
 	 * @param taskId
 	 * @return
 	 */
-	@RequestMapping(value = "/users/{userId}/tasks/{taskId}/roles", method = { RequestMethod.GET })
+	@RequestMapping(value = "/users/{userId}/tasks/{taskId}/role", method = { RequestMethod.GET })
 	@ResponseBody
-	public Map<String, Boolean> getUserRoleInTask(@PathVariable(value = "userId") String userId,
+	public TaskFlowRoleEnum getUserRoleInTask(@PathVariable(value = "userId") String userId,
 			@PathVariable(value = "taskId") String taskId) {
-		//TODO
-		return null;
+		String role = this.taskInfoService.getUserRoleInTask(taskId, userId);
+		return TaskFlowRoleEnum.getEnumByCode(role);
 	}
 }

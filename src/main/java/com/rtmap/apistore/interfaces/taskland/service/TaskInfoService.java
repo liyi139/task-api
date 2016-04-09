@@ -94,4 +94,13 @@ public interface TaskInfoService {
 	 */
 	public List<TaskFollow> getFollowersByTaskId(String taskId);
 
+	/**
+	 * 获取用户在任务中的角色
+	 * 
+	 * @param taskId
+	 * @param userId
+	 * @return
+	 */
+	public String getUserRoleInTask(String taskId, String userId);
+
 }

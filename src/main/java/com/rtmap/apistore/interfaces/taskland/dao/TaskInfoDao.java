@@ -26,4 +26,6 @@ public interface TaskInfoDao {
 	List<TaskInfoBean> selectByTaskPid(@Param(value = "taskId") String taskPid);
 
 	PageList<TaskInfoBean> selectByCond();
+
+	String selectUserRoleByTaskId(@Param(value = "taskId") String taskId,@Param(value = "userId") String userId);
 }

@@ -97,4 +97,9 @@ public class TaskInfoServiceImpl implements TaskInfoService {
 		return this.taskFollowDao.selectByTaskId(taskId);
 	}
 
+	@Override
+	public String getUserRoleInTask(String taskId, String userId) {
+		return this.taskInfoDao.selectUserRoleByTaskId(taskId, userId);
+	}
+
 }
