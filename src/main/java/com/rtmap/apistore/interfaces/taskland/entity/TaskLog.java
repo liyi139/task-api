@@ -14,6 +14,7 @@ public class TaskLog implements IEntity {
 
 	private Integer operateType;
 
+
 	private String operateCont;
 
 	private String operator;

@@ -8,51 +8,48 @@
 		<result column="TASK_ID" property="taskId" jdbcType="VARCHAR" />
 		<result column="REMIND_CONT" property="remindCont" jdbcType="VARCHAR" />
 		<result column="REMIND_USER" property="remindUser" jdbcType="VARCHAR" />
-		<result column="REMIND_HANDLER" property="remindHandler"
-			jdbcType="VARCHAR" />
+		<result column="REMIND_HANDLER" property="remindHandler" jdbcType="VARCHAR" />
 		<result column="REMIND_MODE" property="remindMode" jdbcType="CHAR" />
 		<result column="REMIND_TYPE" property="remindType" jdbcType="SMALLINT" />
 		<result column="RECORD_TIME" property="recordTime" jdbcType="TIMESTAMP" />
 		<result column="REMIND_TIME" property="remindTime" jdbcType="TIMESTAMP" />
 	</resultMap>
 	<sql id="Base_Column_List">
-
-		REMIND_ID, TASK_ID, REMIND_CONT, REMIND_USER,
-		REMIND_HANDLER, REMIND_MODE,
-		REMIND_TYPE,
-		RECORD_TIME, REMIND_TIME
+		REMIND_ID, TASK_ID, REMIND_CONT, REMIND_USER,REMIND_HANDLER, REMIND_MODE,REMIND_TYPE,RECORD_TIME, REMIND_TIME
 	</sql>
-	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+	<select id="selectByRemindId" resultMap="BaseResultMap"
 		parameterType="java.lang.String">
-
-		select
-		<include refid="Base_Column_List" />
-		from ${SCHEMA_TASK}.task_remind_log
-		where REMIND_ID =
-		#{remindId,jdbcType=VARCHAR}
+		SELECT
+			<include refid="Base_Column_List" />
+			FROM ${SCHEMA_TASK}.TASK_REMIND_LOG
+		 WHERE REMIND_ID = #{remindId,jdbcType=VARCHAR}
 	</select>
-	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
-
-		delete from
-		${SCHEMA_TASK}.task_remind_log
-		where REMIND_ID =
-		#{remindId,jdbcType=VARCHAR}
+	<delete id="deleteByRemindId" parameterType="java.lang.String">
+		DELETE FROM ${SCHEMA_TASK}.TASK_REMIND_LOG
+		 WHERE REMIND_ID = #{remindId,jdbcType=VARCHAR}
 	</delete>
 	<insert id="insert"
 		parameterType="com.rtmap.apistore.interfaces.taskland.entity.TaskRemindLog">
-
-		insert into ${SCHEMA_TASK}.task_remind_log (REMIND_ID,
-		TASK_ID, REMIND_CONT,
-		REMIND_USER, REMIND_HANDLER, REMIND_MODE,
-		REMIND_TYPE, RECORD_TIME, REMIND_TIME
-		)
-		values
-		(#{remindId,jdbcType=VARCHAR}, #{taskId,jdbcType=VARCHAR},
-		#{remindCont,jdbcType=VARCHAR},
-		#{remindUser,jdbcType=VARCHAR},
-		#{remindHandler,jdbcType=VARCHAR}, #{remindMode,jdbcType=CHAR},
-		#{remindType,jdbcType=SMALLINT}, now(),
-		#{remindTime,jdbcType=TIMESTAMP}
+		INSERT INTO ${SCHEMA_TASK}.TASK_REMIND_LOG (
+			REMIND_ID,
+			TASK_ID, 
+			REMIND_CONT,
+			REMIND_USER, 
+			REMIND_HANDLER, 
+			REMIND_MODE,
+			REMIND_TYPE, 
+			RECORD_TIME, 
+			REMIND_TIME
+		)VALUES(
+			#{remindId,jdbcType=VARCHAR}, 
+			#{taskId,jdbcType=VARCHAR},
+			#{remindCont,jdbcType=VARCHAR},
+			#{remindUser,jdbcType=VARCHAR},
+			#{remindHandler,jdbcType=VARCHAR}, 
+			#{remindMode,jdbcType=CHAR},
+			#{remindType,jdbcType=SMALLINT}, 
+			now(),
+			#{remindTime,jdbcType=TIMESTAMP}
 		)
 	</insert>
 </mapper>

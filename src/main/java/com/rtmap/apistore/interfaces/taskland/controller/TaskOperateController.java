@@ -1,7 +1,5 @@
 package com.rtmap.apistore.interfaces.taskland.controller;
 
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,15 +11,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.google.common.collect.ImmutableMap;
 import com.rtmap.apistore.interfaces.taskland.bean.TaskInfoBean;
+import com.rtmap.apistore.interfaces.taskland.entity.TaskFlow;
+import com.rtmap.apistore.interfaces.taskland.entity.TaskFollow;
+import com.rtmap.apistore.interfaces.taskland.entity.TaskRemind;
 import com.rtmap.apistore.interfaces.taskland.service.TaskOperService;
 
 /**
  * 任务田，任务操作
  */
 @Controller
-@RequestMapping("/taskland/v1.0/")
+@RequestMapping("/taskland/v1/")
 public class TaskOperateController {
 	@SuppressWarnings("unused")
 	private final static Logger logger = LoggerFactory.getLogger(TaskOperateController.class);
@@ -32,14 +32,14 @@ public class TaskOperateController {
 	 * 添加任务接口
 	 * 
 	 * @param taskInfoBean
+	 * @param userId
 	 * @return
 	 */
 	@RequestMapping(value = "/tasks", method = { RequestMethod.POST })
 	@ResponseBody
-	public Map<String, String> addTask(@RequestBody TaskInfoBean taskInfoBean,
+	public TaskInfoBean addTask(@RequestBody TaskInfoBean taskInfoBean,
 			@RequestParam(required = true, value = "userId") String userId) {
-		String taskId = taskOperateService.addTask(taskInfoBean, userId);
-		return ImmutableMap.of("taskId", taskId);
+		return taskOperateService.addTask(taskInfoBean, userId);
 	}
 
 	/**
@@ -105,9 +105,9 @@ public class TaskOperateController {
 	 */
 	@RequestMapping(value = "/tasks/{taskId}/follow", method = { RequestMethod.PUT })
 	@ResponseBody
-	public void followTask(@PathVariable(value = "taskId") String taskId,
+	public TaskFollow followTask(@PathVariable(value = "taskId") String taskId,
 			@RequestParam(required = true, value = "userId") String userId) {
-		this.taskOperateService.addFollow(taskId, true, userId);
+		return this.taskOperateService.addFollow(taskId, true, userId);
 	}
 
 	/**
@@ -131,9 +131,9 @@ public class TaskOperateController {
 	 */
 	@RequestMapping(value = "/tasks/{taskId}", method = { RequestMethod.PATCH })
 	@ResponseBody
-	public void updateTask(@RequestBody TaskInfoBean taskInfoBean,
+	public TaskInfoBean updateTask(@RequestBody TaskInfoBean taskInfoBean,
 			@RequestParam(required = true, value = "userId") String userId) {
-		this.taskOperateService.updateTask(taskInfoBean, userId);
+		return this.taskOperateService.updateTask(taskInfoBean, userId);
 	}
 
 	/**
@@ -145,11 +145,11 @@ public class TaskOperateController {
 	 */
 	@RequestMapping(value = "/tasks/{taskId}/assign", method = { RequestMethod.PUT })
 	@ResponseBody
-	public void assignTask(@PathVariable(value = "taskId") String taskId,
+	public TaskFlow assignTask(@PathVariable(value = "taskId") String taskId,
 			@RequestParam(required = true, value = "handler") String handler,
 			@RequestParam(required = false, value = "comment") String comment,
 			@RequestParam(required = true, value = "userId") String userId) {
-		this.taskOperateService.addAssignTaskFlow(taskId, handler, comment, userId);
+		return this.taskOperateService.addAssignTaskFlow(taskId, handler, comment, userId);
 	}
 
 	/**
@@ -161,12 +161,12 @@ public class TaskOperateController {
 	 */
 	@RequestMapping(value = "/tasks/{taskId}/urge", method = { RequestMethod.PUT })
 	@ResponseBody
-	public void urgeTask(@PathVariable(value = "taskId") String taskId,
+	public TaskRemind urgeTask(@PathVariable(value = "taskId") String taskId,
 			@RequestParam(required = true, value = "handler") String handler,
 			@RequestParam(required = false, value = "comment") String comment,
 			@RequestParam(required = true, value = "userId") String userId,
 			@RequestParam(required = true, value = "remindMode") String remindMode) {
-		this.taskOperateService.addUrgeRemind(taskId, handler, comment, remindMode, userId);
+		return this.taskOperateService.addUrgeRemind(taskId, handler, comment, remindMode, userId);
 	}
 
 }

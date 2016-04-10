@@ -10,11 +10,36 @@ import com.rtmap.apistore.interfaces.taskland.entity.TaskParticipant;
 @WebRepository
 public interface TaskParticipantDao {
 
-	int delete(@Param(value = "taskId") String taskId, @Param(value = "participant") String participant);
+	/**
+	 * 根据任务编码、参与人编码；删除任务参与人关联信息
+	 * 
+	 * @param taskId
+	 * @param participant
+	 * @return
+	 */
+	int deleteByParticipant(@Param(value = "taskId") String taskId, @Param(value = "participants") String[] participants);
 
+	/**
+	 * 根据任务编码，删除任务参与人关联信息
+	 * 
+	 * @param taskId
+	 * @return
+	 */
 	int deleteByTaskId(@Param(value = "taskId") String taskId);
 
+	/**
+	 * 保存任务参与人关联信息
+	 * 
+	 * @param taskParticipant
+	 * @return
+	 */
 	int insert(TaskParticipant taskParticipant);
 
-	List<TaskParticipant> selectByTaskId(@Param(value = "taskId") String taskId);
+	/**
+	 * 根据任务编码，获取任务参与人关联信息
+	 * 
+	 * @param taskId
+	 * @return
+	 */
+	List<TaskParticipant> selectParticipantsByTaskId(@Param(value = "taskId") String taskId);
 }

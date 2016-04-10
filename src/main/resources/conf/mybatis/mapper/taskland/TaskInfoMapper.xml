@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rtmap.apistore.interfaces.taskland.dao.TaskInfoDao">
+	<resultMap id="BaseResultMap"
+		type="com.rtmap.apistore.interfaces.taskland.entity.TaskInfo">
+		<id column="TASK_ID" jdbcType="VARCHAR" property="taskId" />
+		<result column="TASK_NAME" jdbcType="VARCHAR" property="taskName" />
+		<result column="TASK_CONT" jdbcType="VARCHAR" property="taskCont" />
+		<result column="TASK_STATUS" jdbcType="SMALLINT" property="taskStatus" />
+		<result column="TASK_TYPE" jdbcType="SMALLINT" property="taskType" />
+		<result column="TASK_PRIORITY" jdbcType="SMALLINT" property="taskPriority" />
+		<result column="TASK_RELATE" jdbcType="VARCHAR" property="taskRelate" />
+		<result column="TASK_RELATE_JSON" jdbcType="VARCHAR" property="taskRelateJson" />
+		<result column="TASK_PID" jdbcType="VARCHAR" property="taskPid" />
+		<result column="BEGIN_DATE" jdbcType="DATE" property="beginDate" />
+		<result column="DEADLINE" jdbcType="DATE" property="deadline" />
+		<result column="REMIND_MODE" jdbcType="CHAR" property="remindMode" />
+		<result column="REMIND_MEMBER" jdbcType="CHAR" property="remindMember" />
+		<result column="REMIND_EXPIRE_DAYS" jdbcType="SMALLINT" property="remindExpireDays" />
+		<result column="CREATOR" jdbcType="VARCHAR" property="creator" />
+		<result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="MODIFIER" jdbcType="VARCHAR" property="modifier" />
+		<result column="MODIFY_TIME" jdbcType="TIMESTAMP" property="modifyTime" />
+		<result column="LFT" jdbcType="INTEGER" property="lft" />
+		<result column="RGT" jdbcType="INTEGER" property="rgt" />
+	</resultMap>
+
+	<resultMap type="com.rtmap.apistore.interfaces.taskland.bean.TaskInfoBean"
+		id="BaseResultMap2" extends="BaseResultMap">
+		<result column="SUB_TASK_IDS" jdbcType="VARCHAR" property="subTaskIds" />
+		<result column="SUB_COUNT" jdbcType="INTEGER" property="subCount" />
+		<result column="SUB_PROCESS_COUNT" jdbcType="INTEGER" property="subProcessCount" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		TASK_ID, TASK_NAME, TASK_CONT, TASK_STATUS, TASK_TYPE,TASK_PRIORITY,
+		TASK_RELATE,TASK_RELATE_JSON, TASK_PID, BEGIN_DATE,DEADLINE, 
+		REMIND_MODE, REMIND_MEMBER,REMIND_EXPIRE_DAYS,CREATOR,
+		CREATE_TIME, MODIFIER, MODIFY_TIME, LFT, RGT
+	</sql>
+	<select id="selectByTaskId" parameterType="java.lang.String"
+		resultMap="BaseResultMap2">
+		SELECT
+			P.*,
+			GROUP_CONCAT(C.TASK_ID) AS SUB_TASK_IDS,
+			COUNT(C.TASK_ID) AS
+			SUB_COUNT,
+			<![CDATA[ SUM(IF(C.TASK_STATUS<3,1,0)) AS SUB_PROCESS_COUNT ]]>
+		FROM ${SCHEMA_TASK}.TASK_INFO P
+		LEFT OUTER JOIN ${SCHEMA_TASK}.TASK_INFO C
+			 ON C.TASK_PID=P.TASK_ID
+		WHERE P.TASK_ID = #{taskId,jdbcType=VARCHAR}
+		  AND <![CDATA[ P.TASK_STATUS > 0]]>
+		GROUP BY P.TASK_ID
+		ORDER BY P.MODIFY_TIME DESC
+	</select>
+	<select id="selectIdNamesByIds" resultType="java.util.HashMap" >
+		SELECT 
+			TASK_ID AS ID,TASK_NAME AS NAME
+		  FROM ${SCHEMA_TASK}.TASK_INFO
+		 WHERE TASK_ID IN
+		 <foreach collection="taskIds" item="taskId" open="("
+			separator="," close=")">
+			#{taskId}
+		</foreach>
+	</select>	
+	<select id="selectTaskListByPid" parameterType="java.lang.String"
+		resultMap="BaseResultMap2">
+		SELECT
+			P.*,
+			GROUP_CONCAT(C.TASK_ID) AS SUB_TASK_IDS,
+			COUNT(C.TASK_ID) AS
+			SUB_COUNT,
+			<![CDATA[ SUM(IF(C.TASK_STATUS<3,1,0)) AS SUB_PROCESS_COUNT ]]>
+		FROM ${SCHEMA_TASK}.TASK_INFO P
+		LEFT OUTER JOIN ${SCHEMA_TASK}.TASK_INFO C
+		     ON C.TASK_PID=P.TASK_ID AND AND <![CDATA[ C.TASK_STATUS<> -1 ]]>
+		WHERE P.TASK_PID = #{taskId,jdbcType=VARCHAR}
+		GROUP BY P.TASK_ID
+		ORDER BY P.MODIFY_TIME DESC
+	</select>
+	<select id="selectUserRole" parameterType="java.lang.String">
+		SELECT 
+		    CASE
+		        WHEN (ASSIGNER > 0 AND HANDLER = 0) THEN 'ORIGINATOR'
+		        WHEN (ASSIGNER > 0 AND HANDLER > 0) THEN 'ASSIGNER'
+		        WHEN (ASSIGNER = 0 AND HANDLER > 0) THEN 'HANDLER'
+		        WHEN (FOLLOWER > 0) THEN 'FOLLOWER'
+		        ELSE NULL
+		    END AS ROLE
+		FROM
+		    (
+			    SELECT 
+			        COUNT(IF(T1.TASK_ASSIGNER = #{userId,jdbcType=VARCHAR}, 1, NULL)) ASSIGNER,
+			            COUNT(IF(T1.TASK_HANDLER = #{userId,jdbcType=VARCHAR}, 1, NULL)) HANDLER,
+			            COUNT(T2.FOLLOWER) FOLLOWER
+			    FROM
+			        ${SCHEMA_TASK}.TASK_FLOW T1
+			    LEFT OUTER JOIN ${SCHEMA_TASK}.TASK_FOLLOW T2 
+			         ON T1.TASK_ID = T2.TASK_ID
+			         AND T2.TASK_ID = #{taskId,jdbcType=VARCHAR}
+			         AND T2.FOLLOWER =#{userId,jdbcType=VARCHAR}
+			    WHERE T1.TASK_ID = #{taskId,jdbcType=VARCHAR}
+			      AND (T1.TASK_ASSIGNER = #{userId,jdbcType=VARCHAR} OR 
+			           T1.TASK_HANDLER = #{userId,jdbcType=VARCHAR})
+			    GROUP BY T1.TASK_ID
+		    ) T
+	</select>
+	<update id="deleteByTaskIds">
+		UPDATE ${SCHEMA_TASK}.TASK_INFO SET TASK_STATUS = -1
+		WHERE TASK_ID IN
+		<foreach collection="taskIds" item="taskId" open="("
+			separator="," close=")">
+			#{taskId}
+		</foreach>		
+	</update>
+	<insert id="insertTask"
+		parameterType="com.rtmap.apistore.interfaces.taskland.entity.TaskInfo">
+		INSERT INTO ${SCHEMA_TASK}.TASK_INFO (
+			TASK_ID, 
+			TASK_NAME,
+			TASK_CONT,
+			TASK_STATUS, 
+			TASK_TYPE,
+			TASK_PRIORITY,
+			TASK_RELATE,
+			TASK_RELATE_JSON,
+			TASK_PID,
+			BEGIN_DATE,
+			DEADLINE, 
+			REMIND_MODE,
+			REMIND_MEMBER,
+			REMIND_EXPIRE_DAYS, 
+			CREATOR,
+			CREATE_TIME, 
+			MODIFIER,
+			MODIFY_TIME,
+			LFT,
+			RGT
+		)VALUES(
+			#{taskId,jdbcType=VARCHAR},
+			#{taskName,jdbcType=VARCHAR},
+			#{taskCont,jdbcType=VARCHAR},
+			#{taskStatus,jdbcType=SMALLINT},
+			#{taskType,jdbcType=SMALLINT},
+			#{taskPriority,jdbcType=SMALLINT},
+			#{taskRelate,jdbcType=VARCHAR},
+			#{taskRelateJson,jdbcType=VARCHAR},
+			#{taskPid,jdbcType=VARCHAR},
+			#{beginDate,jdbcType=DATE},
+			#{deadline,jdbcType=DATE},
+			#{remindMode,jdbcType=CHAR},
+			#{remindMember,jdbcType=CHAR},
+			#{remindExpireDays,jdbcType=SMALLINT},
+			#{creator,jdbcType=VARCHAR},
+			now(), 
+			#{modifier,jdbcType=VARCHAR},
+			now(),
+			#{lft,jdbcType=INTEGER},
+			#{rgt,jdbcType=INTEGER}
+		)
+	</insert>
+	<update id="updateTask"
+		parameterType="com.rtmap.apistore.interfaces.taskland.entity.TaskInfo">
+		UPDATE ${SCHEMA_TASK}.TASK_INFO
+		<set>
+			<if test="taskName != null">
+				TASK_NAME = #{taskName,jdbcType=VARCHAR},
+			</if>
+			<if test="taskCont != null">
+				TASK_CONT = #{taskCont,jdbcType=VARCHAR},
+			</if>
+			<if test="taskStatus != null">
+				TASK_STATUS = #{taskStatus,jdbcType=SMALLINT},
+			</if>
+			<if test="taskType != null">
+				TASK_TYPE = #{taskType,jdbcType=SMALLINT},
+			</if>
+			<if test="taskPriority != null">
+				TASK_PRIORITY = #{taskPriority,jdbcType=SMALLINT},
+			</if>
+			<if test="taskRelate != null">
+				TASK_RELATE = #{taskRelate,jdbcType=VARCHAR},
+			</if>
+			<if test="taskRelateJson != null">
+				TASK_RELATE_JSON = #{taskRelateJson,jdbcType=VARCHAR},
+			</if>
+			<if test="taskPid != null">
+				TASK_PID = #{taskPid,jdbcType=VARCHAR},
+			</if>
+			<if test="beginDate != null">
+				BEGIN_DATE = #{beginDate,jdbcType=DATE},
+			</if>
+			<if test="deadline != null">
+				DEADLINE = #{deadline,jdbcType=DATE},
+			</if>
+			<if test="remindMode != null">
+				REMIND_MODE = #{remindMode,jdbcType=CHAR},
+			</if>
+			<if test="remindMember != null">
+				REMIND_MEMBER = #{remindMember,jdbcType=CHAR},
+			</if>
+			<if test="remindExpireDays != null">
+				REMIND_EXPIRE_DAYS =
+				#{remindExpireDays,jdbcType=SMALLINT},
+			</if>
+			<if test="modifier != null">
+				MODIFIER = #{modifier,jdbcType=VARCHAR},
+			</if>
+			MODIFY_TIME = now(),
+			<if test="lft != null">
+				LFT = #{lft,jdbcType=INTEGER},
+			</if>
+			<if test="rgt != null">
+				RGT = #{rgt,jdbcType=INTEGER},
+			</if>
+		</set>
+		WHERE TASK_ID = #{taskId,jdbcType=VARCHAR}
+	</update>
+	<select id="selectTaskListByCond" resultMap="BaseResultMap2" >
+		SELECT
+			P.*,
+			GROUP_CONCAT(C.TASK_ID) AS SUB_TASK_IDS,
+			COUNT(C.TASK_ID) AS
+			SUB_COUNT,
+			<![CDATA[ SUM(IF(C.TASK_STATUS<3,1,0))]]> AS SUB_PROCESS_COUNT
+		FROM ${SCHEMA_TASK}.TASK_INFO P
+		LEFT OUTER JOIN ${SCHEMA_TASK}.TASK_INFO C
+			 ON C.TASK_PID=P.TASK_ID
+		WHERE <![CDATA[ P.TASK_STATUS > 0]]>
+		<if test="group == 'ALL'">
+			AND (
+				P.CREATOR = #{userId} 
+				OR EXISTS(
+			 		SELECT T1.TASK_ID FROM ${SCHEMA_TASK}.TASK_FLOW T1 
+			 		 WHERE T1.TASK_ID = P.TASK_ID
+				       AND (T1.TASK_ASSIGNER = #{userId} OR T1.TASK_HANDLER = #{userId})
+			 	)
+			 	OR EXISTS(
+				  	SELECT T1.TASK_ID FROM ${SCHEMA_TASK}.TASK_FOLLOW T1 
+				  	 WHERE T1.TASK_ID = P.TASK_ID
+				  	   AND T1.FOLLOWER = #{userId}
+			 	)
+			）
+		</if>
+		<if test="group == 'PENDING'">
+			AND EXISTS (
+				SELECT T1.TASK_ID FROM ${SCHEMA_TASK}.TASK_FLOW T1 
+				 WHERE T1.TASK_ID = P.TASK_ID
+				   AND T1.TASK_HANDLER = #{userId}
+				 ORDER BY T1.ASSIGN_TIME DESC LIMIT 1
+			)
+		</if>		
+		<if test="group == 'ORIGIN'">
+			AND P.CREATOR = #{userId}
+		</if>
+		<if test="group == 'ASSIGN'">
+ 			AND EXISTS (
+			  	SELECT T1.TASK_ID FROM ${SCHEMA_TASK}.TASK_FLOW T1 
+			  	 WHERE T1.TASK_ID = P.TASK_ID 
+			  	   AND T1.TASK_ASSIGNER = #{userId}
+			  	   AND P.CREATOR != #{userId}
+		  	)
+		</if>
+		<if test="group == 'FOLLOW'">
+		  AND EXISTS(
+		  	SELECT T1.TASK_ID FROM ${SCHEMA_TASK}.TASK_FOLLOW T1 
+		  	 WHERE T1.TASK_ID = P.TASK_ID
+		  	   AND T1.FOLLOWER = #{userId}
+		  )			
+		</if>
+		<if test="queryParm.taskType != null">
+			AND P.TASK_TYPE IN
+			<foreach collection="queryParm.taskType" item="item" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="queryParm.taskStatus != null">
+			AND P.TASK_STATUS IN
+			<foreach collection="queryParm.taskStatus" item="item" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="queryParm.taskPriority != null">
+			AND P.TASK_PRIORITY = #{queryParm.taskPriority}
+		</if>
+		<if test="queryParm.q != null and queryParm.q != ''">
+			AND P.TASK_NAME LIKE CONCAT('%',#{queryParm.q},'%')
+		</if>
+		<if test="queryParm.deadline_begin != null">
+			<![CDATA[ AND DEADLINE >= queryParm.deadline_begin ]]>
+		</if>
+		<if test="queryParm.deadline_end != null">
+			<![CDATA[ AND DEADLINE <= queryParm.deadline_end ]]>
+		</if>
+		<if test="queryParm.modifyTime_begin != null">
+			<![CDATA[ AND MODIFY_TIME >= queryParm.modifyTime_begin ]]>
+		</if>
+		<if test="queryParm.modifyTime_end != null">
+			<![CDATA[ AND MODIFY_TIME <= queryParm.modifyTime_end ]]>
+		</if>
+		GROUP BY P.TASK_ID
+	</select>
+</mapper>

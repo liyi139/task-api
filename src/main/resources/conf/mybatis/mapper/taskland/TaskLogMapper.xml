@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rtmap.apistore.interfaces.taskland.dao.TaskLogDao">
+	<resultMap id="BaseResultMap"
+		type="com.rtmap.apistore.interfaces.taskland.entity.TaskLog">
+
+		<id column="LOG_ID" property="logId" jdbcType="VARCHAR" />
+		<result column="TASK_ID" property="taskId" jdbcType="VARCHAR" />
+		<result column="OPERATE_TYPE" property="operateType" jdbcType="SMALLINT" />
+		<result column="OPERATE_CONT" property="operateCont" jdbcType="VARCHAR" />
+		<result column="OPERATOR" property="operator" jdbcType="VARCHAR" />
+		<result column="OPERATE_TIME" property="operateTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		LOG_ID, TASK_ID, OPERATE_TYPE,OPERATE_CONT, OPERATOR,OPERATE_TIME
+	</sql>
+	<select id="selectByLogId" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		SELECT
+			<include refid="Base_Column_List" />
+		  FROM ${SCHEMA_TASK}.TASK_LOG
+		 WHERE LOG_ID = #{logId,jdbcType=VARCHAR}
+	</select>
+	<select id="selectLogsByTaskId" resultMap="BaseResultMap">
+		SELECT
+			<include refid="Base_Column_List" />
+		  FROM ${SCHEMA_TASK}.TASK_LOG
+		 WHERE TASK_ID = #{taskId,jdbcType=VARCHAR}
+		<if test="states!= null">
+			AND OPERATE_TYPE IN
+			<foreach item="state" index="index" collection="states"
+				open="(" separator="," close=")">
+				#{state}
+			</foreach>
+		</if>
+		ORDER BY OPERATE_TIME DESC
+	</select>
+	<delete id="deleteByLogId" parameterType="java.lang.String">
+		DELETE FROM ${SCHEMA_TASK}.TASK_LOG
+		 WHERE LOG_ID = #{logId,jdbcType=VARCHAR}
+	</delete>
+	<delete id="deleteByTaskId" parameterType="java.lang.String">
+		DELETE FROM ${SCHEMA_TASK}.task_log
+		 WHERE TASK_ID = #{taskId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert"
+		parameterType="com.rtmap.apistore.interfaces.taskland.entity.TaskLog">
+		INSERT INTO ${SCHEMA_TASK}.TASK_LOG (
+			LOG_ID,
+			TASK_ID,
+			OPERATE_TYPE,
+			OPERATE_CONT, 
+			OPERATOR, 
+			OPERATE_TIME
+		)VALUES(
+			#{logId,jdbcType=VARCHAR}, 
+			#{taskId,jdbcType=VARCHAR},
+			#{operateType,jdbcType=SMALLINT},
+			#{operateCont,jdbcType=VARCHAR},
+			#{operator,jdbcType=VARCHAR}, 
+			now()
+		)
+	</insert>
+	<insert id="insertBatch"
+		parameterType="java.util.List">
+		INSERT INTO ${SCHEMA_TASK}.TASK_LOG (
+			LOG_ID,
+			TASK_ID,
+			OPERATE_TYPE,
+			OPERATE_CONT, 
+			OPERATOR, 
+			OPERATE_TIME
+		)VALUES
+		<foreach collection="taskLogs" item="tasklog"  separator=",">
+		(
+			#{tasklog.logId,jdbcType=VARCHAR}, 
+			#{tasklog.taskId,jdbcType=VARCHAR},
+			#{tasklog.operateType,jdbcType=SMALLINT},
+			#{tasklog.operateCont,jdbcType=VARCHAR},
+			#{tasklog.operator,jdbcType=VARCHAR}, 
+			now()
+		)
+		</foreach>
+	</insert>
+</mapper>

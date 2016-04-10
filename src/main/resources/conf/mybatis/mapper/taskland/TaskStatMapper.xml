@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rtmap.apistore.interfaces.taskland.dao.TaskStatDao">
+	<select id="statCountByGroup" parameterType="java.lang.String"
+		resultType="java.util.HashMap">
+		(SELECT 'ORIGIN' AS GRP, COUNT(T1.TASK_ID) AS CNT
+		   FROM ${SCHEMA_TASK}.TASK_INFO T1
+		  WHERE T1.CREATOR = #{userId,jdbcType=VARCHAR} AND T1.TASK_STATUS = 2) 
+		UNION 
+		(SELECT 'ASSIGN' AS GRP, COUNT(T1.TASK_ID) AS CNT
+		   FROM ${SCHEMA_TASK}.TASK_INFO T1
+		  WHERE <![CDATA[t1.TASK_STATUS = 2 and t1.CREATOR <> #{userId,jdbcType=VARCHAR}]]>
+		    AND EXISTS( 
+		  		SELECT T2.TASK_ID FROM TASKLAND.TASK_FLOW T2 WHERE T1.TASK_ID = T2.TASK_ID AND T2.TASK_ASSIGNER = #{userId,jdbcType=VARCHAR})
+		  	    ) 
+		UNION 
+		(SELECT 'FOLLOW' AS GRP, COUNT(T1.TASK_ID) AS CNT
+		   FROM ${SCHEMA_TASK}.TASK_INFO T1
+          WHERE T1.TASK_STATUS = 2
+		    AND EXISTS( 
+		    	SELECT T2.TASK_ID FROM TASKLAND.TASK_FOLLOW T2 WHERE T1.TASK_ID = T2.TASK_ID AND T2.FOLLOWER = #{userId,jdbcType=VARCHAR})) 
+		UNION 
+		(SELECT 'PENDING' AS GRP, COUNT(T1.TASK_ID) AS CNT
+		   FROM ${SCHEMA_TASK}.TASK_INFO T1
+		  WHERE T1.TASK_STATUS IN (1,2)
+		    AND EXISTS( 
+		    	SELECT T2.TASK_ID FROM TASKLAND.TASK_FLOW T2 WHERE T1.TASK_ID = T2.TASK_ID AND T2.TASK_HANDLER = #{userId,jdbcType=VARCHAR} ORDER BY T2.ASSIGN_TIME DESC LIMIT 1))
+	</select>
+</mapper>

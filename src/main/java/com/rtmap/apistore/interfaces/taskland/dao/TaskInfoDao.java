@@ -7,25 +7,82 @@ import org.apache.ibatis.annotations.Param;
 
 import com.rtmap.apistore.common.annotation.WebRepository;
 import com.rtmap.apistore.core.web.page.PageList;
+import com.rtmap.apistore.core.web.page.PageQuery;
 import com.rtmap.apistore.interfaces.taskland.bean.TaskInfoBean;
+import com.rtmap.apistore.interfaces.taskland.bean.TaskQueryParamBean;
 import com.rtmap.apistore.interfaces.taskland.entity.TaskInfo;
 
 @WebRepository
 public interface TaskInfoDao {
 
-	int deleteByPrimaryKey(@Param(value = "taskId") String taskId);
+	/**
+	 * 根据任务编码，删除任务对象
+	 * 
+	 * @param taskId
+	 * @return
+	 */
+	int deleteByTaskIds(@Param(value = "taskIds") String[] taskIds);
 
-	int insert(TaskInfo taskInfo);
+	/**
+	 * 保存任务对象
+	 * 
+	 * @param taskInfo
+	 * @return
+	 */
+	int insertTask(TaskInfo taskInfo);
 
-	int updateByPrimaryKeySelective(TaskInfo taskInfo);
+	/**
+	 * 更新任务对象
+	 * 
+	 * @param taskInfo
+	 * @return
+	 */
+	int updateTask(TaskInfo taskInfo);
 
-	int updateByPrimaryKey(TaskInfo taskInfo);
+	/**
+	 * 根据任务编码获取任务对象
+	 * 
+	 * @param taskId
+	 * @return
+	 */
+	TaskInfoBean selectByTaskId(@Param(value = "taskId") String taskId);
 
-	TaskInfoBean selectByPrimaryKey(@Param(value = "taskId") String taskId);
+	/**
+	 * 根据任务编码数组，获取任务编码对应任务名称
+	 * 
+	 * @param taskIds
+	 * @return
+	 */
+	List<Map<String, String>> selectIdNamesByIds(@Param(value = "taskIds") String[] taskIds);
 
-	List<TaskInfoBean> selectByTaskPid(@Param(value = "taskId") String taskPid);
+	/**
+	 * 根据任务编码，获取所有子任务对象
+	 * 
+	 * @param taskPid
+	 * @return
+	 */
+	List<TaskInfoBean> selectTaskListByPid(@Param(value = "taskId") String taskPid);
 
-	PageList<TaskInfoBean> selectByCond();
+	/**
+	 * 根据任务编码、用户编码，获取用户在此任务中的角色：发起人、指派人、处理人、关注人
+	 * 
+	 * @param taskId
+	 * @param userId
+	 * @return
+	 */
+	String selectUserRole(@Param(value = "taskId") String taskId, @Param(value = "userId") String userId);
 
-	String selectUserRoleByTaskId(@Param(value = "taskId") String taskId,@Param(value = "userId") String userId);
+	/**
+	 * 根据筛选条件获取符合条件的任务对象列表
+	 * 
+	 * @param userId
+	 * @param group
+	 * @param queryParm
+	 * @param pageQuery
+	 * @return
+	 */
+	PageList<TaskInfoBean> selectTaskListByCond(@Param(value = "userId") String userId,
+			@Param(value = "group") String group, @Param(value = "queryParm") TaskQueryParamBean queryParm,
+			PageQuery pageQuery);
+
 }

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rtmap.apistore.interfaces.taskland.dao.TaskFollowDao">
+	<resultMap id="BaseResultMap"
+		type="com.rtmap.apistore.interfaces.taskland.entity.TaskFollow" >
+		<id column="TASK_ID" property="taskId" jdbcType="VARCHAR" />
+		<result column="FOLLOWER" property="follower" jdbcType="VARCHAR" />
+		<result column="FOLLOW_TIME" property="followTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		TASK_ID, FOLLOWER, FOLLOW_TIME
+	</sql>
+	<select id="selectFollowsByTaskId" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		SELECT
+			<include refid="Base_Column_List" />
+		  FROM ${SCHEMA_TASK}.TASK_FOLLOW
+		 WHERE TASK_ID =#{taskId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByFollow" parameterType="java.lang.String">
+		DELETE FROM ${SCHEMA_TASK}.TASK_FOLLOW
+		 WHERE TASK_ID = #{taskId,jdbcType=VARCHAR}
+		   AND FOLLOWER = #{follower,jdbcType=VARCHAR}
+	</delete>
+	<delete id="deleteByTaskId" parameterType="java.lang.String">
+		DELETE FROM ${SCHEMA_TASK}.TASK_FOLLOW
+		 WHERE TASK_ID = #{taskId}
+	</delete>
+	<insert id="insert" parameterType="com.rtmap.apistore.interfaces.taskland.entity.TaskFollow">
+		INSERT INTO ${SCHEMA_TASK}.TASK_FOLLOW (
+			TASK_ID, 
+			FOLLOWER, 
+			FOLLOW_TIME
+		)
+		SELECT
+			#{taskId,jdbcType=VARCHAR},
+			#{follower,jdbcType=VARCHAR},
+			NOW()
+			FROM DUAL
+		 WHERE NOT EXISTS (
+			SELECT * FROM ${SCHEMA_TASK}.TASK_FOLLOW
+			 WHERE TASK_ID=#{taskId,jdbcType=VARCHAR}
+		       AND FOLLOWER=#{follower,jdbcType=VARCHAR}
+		 )
+	</insert>
+</mapper>

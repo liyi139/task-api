@@ -12,60 +12,67 @@
 		<result column="OPERATE_TIME" property="operateTime" jdbcType="TIMESTAMP" />
 	</resultMap>
 	<sql id="Base_Column_List">
-
 		ATTACH_ID, TASK_ID, ATTACH_NAME, ATTACH_PATH, OPERATOR,
 		OPERATE_TIME
 	</sql>
-	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+	<select id="selectByAttachId" resultMap="BaseResultMap"
 		parameterType="java.lang.String">
-
-		select
-		<include refid="Base_Column_List" />
-		from ${SCHEMA_TASK}.task_attach_file
-		where ATTACH_ID =
-		#{attachId,jdbcType=VARCHAR}
+		SELECT
+			<include refid="Base_Column_List" />
+		  FROM ${SCHEMA_TASK}.TASK_ATTACH_FILE
+		 WHERE ATTACH_ID = #{attachId,jdbcType=VARCHAR}
 	</select>
-	<select id="selectByTaskId" resultMap="BaseResultMap"
+	<select id="selectIdNamesByIds" resultType="java.util.HashMap">
+		SELECT 
+			ATTACH_ID AS ID,ATTACH_NAME AS NAME
+		  FROM ${SCHEMA_TASK}.TASK_ATTACH_FILE
+		 WHERE ATTACH_ID IN
+		 <foreach collection="attachIds" item="attachId" open="("
+			separator="," close=")">
+			#{attachId}
+		</foreach>
+	</select>
+	<select id="selectAttachesByTaskId" resultMap="BaseResultMap"
 		parameterType="java.lang.String">
-		select
-		<include refid="Base_Column_List" />
-		from ${SCHEMA_TASK}.task_attach_file
-		where TASK_ID =
-		#{taskId,jdbcType=VARCHAR} order by OPERATE_TIME desc
+		SELECT
+			<include refid="Base_Column_List" />
+		  FROM ${SCHEMA_TASK}.TASK_ATTACH_FILE
+		 WHERE TASK_ID = #{taskId,jdbcType=VARCHAR} 
+		 ORDER BY OPERATE_TIME DESC
 	</select>
-	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
-
-		delete from
-		${SCHEMA_TASK}.task_attach_file
-		where ATTACH_ID =
-		#{attachId,jdbcType=VARCHAR}
+	<delete id="deleteByAttachIds">
+		DELETE FROM ${SCHEMA_TASK}.TASK_ATTACH_FILE
+		 WHERE ATTACH_ID IN
+		<foreach collection="attachIds" item="attachId" open="("
+			separator="," close=")">
+			#{attachId}
+		</foreach>
 	</delete>
 	<delete id="deleteByTaskId" parameterType="java.lang.String">
-
-		delete from
-		${SCHEMA_TASK}.task_attach_file
-		where TASK_ID =
-		#{taskId,jdbcType=VARCHAR}
+		DELETE FROM ${SCHEMA_TASK}.TASK_ATTACH_FILE
+		WHERE TASK_ID =#{taskId}
 	</delete>
 	<insert id="insert"
 		parameterType="com.rtmap.apistore.interfaces.taskland.entity.TaskAttachFile">
-
-		insert into ${SCHEMA_TASK}.task_attach_file (ATTACH_ID,
-		TASK_ID,
-		ATTACH_NAME,
-		ATTACH_PATH, OPERATOR, OPERATE_TIME
-		)
-		values
-		(#{attachId,jdbcType=VARCHAR}, #{taskId,jdbcType=VARCHAR},
-		#{attachName,jdbcType=VARCHAR},
-		#{attachPath,jdbcType=VARCHAR},
-		#{operator,jdbcType=VARCHAR}, now()
+		INSERT INTO ${SCHEMA_TASK}.TASK_ATTACH_FILE (
+			ATTACH_ID,
+			TASK_ID,
+			ATTACH_NAME,
+			ATTACH_PATH, 
+			OPERATOR, 
+			OPERATE_TIME
+		)VALUES(
+			#{attachId,jdbcType=VARCHAR}, 
+			#{taskId,jdbcType=VARCHAR},
+			#{attachName,jdbcType=VARCHAR},
+			#{attachPath,jdbcType=VARCHAR},
+			#{operator,jdbcType=VARCHAR}, 
+			NOW()
 		)
 	</insert>
-	<update id="updateByPrimaryKeySelective"
+	<update id="update"
 		parameterType="com.rtmap.apistore.interfaces.taskland.entity.TaskAttachFile">
-
-		update ${SCHEMA_TASK}.task_attach_file
+		UPDATE ${SCHEMA_TASK}.TASK_ATTACH_FILE
 		<set>
 			<if test="taskId != null">
 				TASK_ID = #{taskId,jdbcType=VARCHAR},
@@ -81,22 +88,6 @@
 			</if>
 			OPERATE_TIME = now(),
 		</set>
-		where ATTACH_ID = #{attachId,jdbcType=VARCHAR}
-	</update>
-	<update id="updateByPrimaryKey"
-		parameterType="com.rtmap.apistore.interfaces.taskland.entity.TaskAttachFile">
-
-		update ${SCHEMA_TASK}.task_attach_file
-		set TASK_ID =
-		#{taskId,jdbcType=VARCHAR},
-		ATTACH_NAME =
-		#{attachName,jdbcType=VARCHAR},
-		ATTACH_PATH =
-		#{attachPath,jdbcType=VARCHAR},
-		OPERATOR =
-		#{operator,jdbcType=VARCHAR},
-		OPERATE_TIME = now()
-		where ATTACH_ID =
-		#{attachId,jdbcType=VARCHAR}
+		WHERE ATTACH_ID = #{attachId,jdbcType=VARCHAR}
 	</update>
 </mapper>

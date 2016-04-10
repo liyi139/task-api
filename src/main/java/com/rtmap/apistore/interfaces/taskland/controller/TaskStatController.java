@@ -18,7 +18,7 @@ import com.rtmap.apistore.interfaces.taskland.service.TaskStatService;
  *
  */
 @Controller
-@RequestMapping("/taskland/v1.0/")
+@RequestMapping("/taskland/v1/")
 public class TaskStatController {
 	@SuppressWarnings("unused")
 	private final static Logger logger = LoggerFactory.getLogger(TaskStatController.class);
@@ -31,9 +31,9 @@ public class TaskStatController {
 	 * @param userId
 	 * @return
 	 */
-	@RequestMapping(value = "users/{userId}/tasks/stat", method = { RequestMethod.GET })
+	@RequestMapping(value = "users/{userId}/tasks/statCount", method = { RequestMethod.GET })
 	@ResponseBody
-	public Map<String, String> statTaskCount(@PathVariable(value = "userId") String userId) {
-		return null;
+	public Map<String, Integer> statCount(@PathVariable(value = "userId") String userId) {
+		return taskStatService.statCount(userId);
 	}
 }

@@ -10,11 +10,32 @@ import com.rtmap.apistore.interfaces.taskland.entity.TaskFollow;
 @WebRepository
 public interface TaskFollowDao {
 
-	int delete(@Param(value = "taskId") String taskId, @Param(value = "follower") String follower);
+	/**
+	 * 删除任务关注信息
+	 * @param taskId
+	 * @param follower
+	 * @return
+	 */
+	int deleteByFollow(@Param(value = "taskId") String taskId, @Param(value = "follower") String follower);
 	
-	int deleteByTaskId(@Param(value = "taskId") String taskId);
+	/**
+	 * 根据任务编码，删除任务相关的关注信息
+	 * @param taskIds
+	 * @return
+	 */
+	int deleteByTaskId(@Param(value = "taskId") String taskIds);
 
-	int insert(@Param(value = "taskId") String taskId, @Param(value = "follower") String follower);
+	/**
+	 * 保存任务关注信息
+	 * @param taskFollow
+	 * @return
+	 */
+	int insert(TaskFollow taskFollow);
 
-	List<TaskFollow> selectByTaskId(@Param(value = "taskId") String taskId);
+	/**
+	 * 根据任务编码，获取任务相关的关注信息列表
+	 * @param taskId
+	 * @return
+	 */
+	List<TaskFollow> selectFollowsByTaskId(@Param(value = "taskId") String taskId);
 }

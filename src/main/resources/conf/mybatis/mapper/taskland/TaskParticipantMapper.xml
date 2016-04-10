@@ -10,42 +10,34 @@
 		<result column="OPERATE_TIME" property="operateTime" jdbcType="TIMESTAMP" />
 	</resultMap>
 	<sql id="Base_Column_List">
-
 		TASK_ID, PARTICIPANT, OPERATOR, OPERATE_TIME
 	</sql>
-	<select id="selectByTaskId" resultMap="BaseResultMap"
+	<select id="selectParticipantsByTaskId" resultMap="BaseResultMap"
 		parameterType="java.lang.String">
-
-		select
-		<include refid="Base_Column_List" />
-		from ${SCHEMA_TASK}.task_participant
-		where TASK_ID =
-		#{taskId,jdbcType=VARCHAR}
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM ${SCHEMA_TASK}.TASK_PARTICIPANT
+		WHERE TASK_ID = #{taskId,jdbcType=VARCHAR}
 	</select>
-	<delete id="delete" parameterType="java.lang.String">
-
-		delete from
-		${SCHEMA_TASK}.task_participant
-		where TASK_ID =
-		#{taskId,jdbcType=VARCHAR} and
-		PARTICIPANT=#{participant,jdbcType=VARCHAR}
+	<delete id="deleteByParticipant">
+		DELETE FROM ${SCHEMA_TASK}.TASK_PARTICIPANT
+		WHERE TASK_ID =#{taskId,jdbcType=VARCHAR} 
+		  AND PARTICIPANT IN
+		<foreach collection="participants" item="participant" open="("
+			separator="," close=")">
+			#{participant}
+		</foreach>
 	</delete>
 	<delete id="deleteByTaskId" parameterType="java.lang.String">
-
-		delete from
-		${SCHEMA_TASK}.task_participant
-		where TASK_ID
-		=#{taskId,jdbcType=VARCHAR}
+		DELETE FROM ${SCHEMA_TASK}.TASK_PARTICIPANT
+		 WHERE TASK_ID=#{taskId,jdbcType=VARCHAR}
 	</delete>
 	<insert id="insert"
 		parameterType="com.rtmap.apistore.interfaces.taskland.entity.TaskParticipant">
-
-		insert into ${SCHEMA_TASK}.task_participant (TASK_ID,
-		PARTICIPANT, OPERATOR,
-		OPERATE_TIME)
-		values (#{taskId,jdbcType=VARCHAR},
-		#{participant,jdbcType=VARCHAR},
-		#{operator,jdbcType=VARCHAR},
-		now())
+		INSERT INTO ${SCHEMA_TASK}.TASK_PARTICIPANT (TASK_ID, PARTICIPANT, OPERATOR,OPERATE_TIME)
+		VALUES (#{taskId,jdbcType=VARCHAR},
+		        #{participant,jdbcType=VARCHAR},
+		        #{operator,jdbcType=VARCHAR},NOW()
+		       )
 	</insert>
 </mapper>

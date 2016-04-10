@@ -1,6 +1,12 @@
 package com.rtmap.apistore.interfaces.taskland.service;
 
 import com.rtmap.apistore.interfaces.taskland.bean.TaskInfoBean;
+import com.rtmap.apistore.interfaces.taskland.entity.TaskAttachFile;
+import com.rtmap.apistore.interfaces.taskland.entity.TaskComment;
+import com.rtmap.apistore.interfaces.taskland.entity.TaskFlow;
+import com.rtmap.apistore.interfaces.taskland.entity.TaskFollow;
+import com.rtmap.apistore.interfaces.taskland.entity.TaskParticipant;
+import com.rtmap.apistore.interfaces.taskland.entity.TaskRemind;
 
 public interface TaskOperService {
 	/**
@@ -10,7 +16,7 @@ public interface TaskOperService {
 	 * @param userId
 	 * @return
 	 */
-	public String addTask(TaskInfoBean taskInfoBean, String userId);
+	public TaskInfoBean addTask(TaskInfoBean taskInfoBean, String userId);
 
 	/**
 	 * 添加子任务
@@ -20,7 +26,7 @@ public interface TaskOperService {
 	 * @param userId
 	 * @return
 	 */
-	public String addTask(String taskPid, TaskInfoBean taskInfoBean, String userId);
+	public TaskInfoBean addTask(String taskPid, TaskInfoBean taskInfoBean, String userId);
 
 	/**
 	 * 删除任务
@@ -29,7 +35,7 @@ public interface TaskOperService {
 	 * @param userId
 	 * @return
 	 */
-	public boolean delTask(String taskId, String userId);
+	public void delTask(String taskId, String userId);
 
 	/**
 	 * 删除子任务
@@ -39,7 +45,7 @@ public interface TaskOperService {
 	 * @param userId
 	 * @return
 	 */
-	public boolean delTask(String taskPid, String[] taskId, String userId);
+	public void delTask(String taskPid, String[] taskIds, String userId);
 
 	/**
 	 * 任务标记取消
@@ -49,7 +55,7 @@ public interface TaskOperService {
 	 * @param userId
 	 * @return
 	 */
-	public boolean markCancel(String taskId, String comment, String userId);
+	public void markCancel(String taskId, String comment, String userId);
 
 	/**
 	 * 任务标记完成
@@ -59,7 +65,7 @@ public interface TaskOperService {
 	 * @param userId
 	 * @return
 	 */
-	public boolean markFinish(String taskId, String comment, String userId);
+	public void markFinish(String taskId, String comment, String userId);
 
 	/**
 	 * 任务标记拒绝
@@ -69,7 +75,7 @@ public interface TaskOperService {
 	 * @param userId
 	 * @return
 	 */
-	public boolean markRefuse(String taskId, String comment, String userId);
+	public void markRefuse(String taskId, String comment, String userId);
 
 	/**
 	 * 添加任务关注
@@ -79,7 +85,7 @@ public interface TaskOperService {
 	 * @param userId
 	 * @return
 	 */
-	public boolean addFollow(String taskId, boolean isFollow, String userId);
+	public TaskFollow addFollow(String taskId, boolean isFollow, String userId);
 
 	/**
 	 * 修改任务信息
@@ -88,7 +94,7 @@ public interface TaskOperService {
 	 * @param userId
 	 * @return
 	 */
-	public boolean updateTask(TaskInfoBean taskInfoBean, String userId);
+	public TaskInfoBean updateTask(TaskInfoBean taskInfoBean, String userId);
 
 	/**
 	 * 添加任务指派
@@ -99,7 +105,7 @@ public interface TaskOperService {
 	 * @param userId
 	 * @return
 	 */
-	public boolean addAssignTaskFlow(String taskId, String handler, String comment, String userId);
+	public TaskFlow addAssignTaskFlow(String taskId, String handler, String comment, String userId);
 
 	/**
 	 * 添加任务催办
@@ -110,7 +116,7 @@ public interface TaskOperService {
 	 * @param remindMode
 	 * @param userId
 	 */
-	public void addUrgeRemind(String taskId, String handler, String comment, String remindMode, String userId);
+	public TaskRemind addUrgeRemind(String taskId, String handler, String comment, String remindMode, String userId);
 
 	/**
 	 * 添加任务相关附件
@@ -121,7 +127,7 @@ public interface TaskOperService {
 	 * @param userId
 	 * @return
 	 */
-	public String addAttachFile(String taskId, String fileName, String filePath, String userId);
+	public TaskAttachFile addAttachFile(String taskId, String fileName, String filePath, String userId);
 
 	/**
 	 * 删除任务相关附件
@@ -140,7 +146,7 @@ public interface TaskOperService {
 	 * @param userId
 	 * @return
 	 */
-	public String addTaskComment(String taskId, String comment, String userId);
+	public TaskComment addTaskComment(String taskId, String comment, String userId);
 
 	/**
 	 * 删除任务评论
@@ -159,7 +165,7 @@ public interface TaskOperService {
 	 * @param userId
 	 * @return
 	 */
-	public void addParticipant(String taskId, String participant, String userId);
+	public TaskParticipant addParticipant(String taskId, String participant, String userId);
 
 	/**
 	 * 删除任务参与人

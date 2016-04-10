@@ -1,7 +1,5 @@
 package com.rtmap.apistore.interfaces.taskland.controller;
 
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.google.common.collect.ImmutableMap;
 import com.rtmap.apistore.interfaces.taskland.bean.TaskInfoBean;
+import com.rtmap.apistore.interfaces.taskland.entity.TaskAttachFile;
+import com.rtmap.apistore.interfaces.taskland.entity.TaskComment;
+import com.rtmap.apistore.interfaces.taskland.entity.TaskParticipant;
 import com.rtmap.apistore.interfaces.taskland.service.TaskOperService;
 
 /**
@@ -22,7 +22,7 @@ import com.rtmap.apistore.interfaces.taskland.service.TaskOperService;
  *
  */
 @Controller
-@RequestMapping("/taskland/v1.0/")
+@RequestMapping("/taskland/v1/")
 public class TaskOperateExtController {
 	@SuppressWarnings("unused")
 	private final static Logger logger = LoggerFactory.getLogger(TaskOperateExtController.class);
@@ -38,11 +38,10 @@ public class TaskOperateExtController {
 	 */
 	@RequestMapping(value = "/tasks/{taskId}/comments", method = { RequestMethod.PUT })
 	@ResponseBody
-	public Map<String, String> addComment(@PathVariable(value = "taskId") String taskId,
+	public TaskComment addComment(@PathVariable(value = "taskId") String taskId,
 			@RequestParam(required = true, value = "comment") String comment,
 			@RequestParam(required = true, value = "userId") String userId) {
-		String commentId = this.taskOperateService.addTaskComment(taskId, comment, userId);
-		return ImmutableMap.of("commentId", commentId);
+		return this.taskOperateService.addTaskComment(taskId, comment, userId);
 	}
 
 	/**
@@ -70,12 +69,11 @@ public class TaskOperateExtController {
 	 */
 	@RequestMapping(value = "/tasks/{taskId}/attaches", method = { RequestMethod.POST })
 	@ResponseBody
-	public Map<String, String> addAttach(@PathVariable(value = "taskId") String taskId,
+	public TaskAttachFile addAttach(@PathVariable(value = "taskId") String taskId,
 			@RequestParam(required = true, value = "fileName") String fileName,
 			@RequestParam(required = true, value = "filePath") String filePath,
 			@RequestParam(required = true, value = "userId") String userId) {
-		String attachId = this.taskOperateService.addAttachFile(taskId, fileName, filePath, userId);
-		return ImmutableMap.of("attachId", attachId);
+		return this.taskOperateService.addAttachFile(taskId, fileName, filePath, userId);
 	}
 
 	/**
@@ -102,10 +100,9 @@ public class TaskOperateExtController {
 	 */
 	@RequestMapping(value = "/tasks/{taskId}/subtasks", method = { RequestMethod.POST })
 	@ResponseBody
-	public Map<String, String> addSubTask(@PathVariable(value = "taskId") String taskId,
+	public TaskInfoBean addSubTask(@PathVariable(value = "taskId") String taskId,
 			@RequestBody TaskInfoBean taskInfoBean, @RequestParam(required = true, value = "userId") String userId) {
-		String subTaskId = this.taskOperateService.addTask(taskId, taskInfoBean, userId);
-		return ImmutableMap.of("taskPid", taskId, "taskId", subTaskId);
+		return this.taskOperateService.addTask(taskId, taskInfoBean, userId);
 	}
 
 	/**
@@ -132,10 +129,10 @@ public class TaskOperateExtController {
 	 */
 	@RequestMapping(value = "/tasks/{taskId}/participants", method = { RequestMethod.POST })
 	@ResponseBody
-	public void addParticipant(@PathVariable(value = "taskId") String taskId,
+	public TaskParticipant addParticipant(@PathVariable(value = "taskId") String taskId,
 			@RequestParam(required = true, value = "participant") String participant,
 			@RequestParam(required = true, value = "userId") String userId) {
-		this.taskOperateService.addParticipant(taskId, participant, userId);
+		return this.taskOperateService.addParticipant(taskId, participant, userId);
 	}
 
 	/**

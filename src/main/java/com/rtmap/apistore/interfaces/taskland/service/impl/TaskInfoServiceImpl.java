@@ -44,17 +44,17 @@ public class TaskInfoServiceImpl implements TaskInfoService {
 
 	@Override
 	public TaskInfoBean getTaskById(String taskId) {
-		return this.taskInfoDao.selectByPrimaryKey(taskId);
+		return this.taskInfoDao.selectByTaskId(taskId);
 	}
 
 	@Override
 	public List<TaskAttachFile> getAttachesByTaskId(String taskId) {
-		return this.taskAttachFileDao.selectByTaskId(taskId);
+		return this.taskAttachFileDao.selectAttachesByTaskId(taskId);
 	}
 
 	@Override
 	public PageList<TaskLog> getStateLogsByTaskId(String taskId, PageQuery pageQuery) {
-		return this.taskLogDao.selectByTaskId(taskId,
+		return this.taskLogDao.selectLogsByTaskId(taskId,
 				new Integer[] { TaskOperTypeEnum.CREATE.getCode(), TaskOperTypeEnum.ASSIGN.getCode(),
 						TaskOperTypeEnum.CANCEL.getCode(), TaskOperTypeEnum.FINISH.getCode(),
 						TaskOperTypeEnum.REFUSE.getCode() },
@@ -63,43 +63,43 @@ public class TaskInfoServiceImpl implements TaskInfoService {
 
 	@Override
 	public PageList<TaskLog> getOperLogsByTaskId(String taskId, PageQuery pageQuery) {
-		return this.taskLogDao.selectByTaskId(taskId, null, pageQuery);
+		return this.taskLogDao.selectLogsByTaskId(taskId, null, pageQuery);
 	}
 
 	@Override
 	public PageList<TaskLog> getViewLogsByTaskId(String taskId, PageQuery pageQuery) {
-		return this.taskLogDao.selectByTaskId(taskId, new Integer[] { TaskOperTypeEnum.VIEW.getCode() }, pageQuery);
+		return this.taskLogDao.selectLogsByTaskId(taskId, new Integer[] { TaskOperTypeEnum.VIEW.getCode() }, pageQuery);
 	}
 
 	@Override
 	public List<TaskInfoBean> getSubTasksByTaskId(String taskId) {
-		return this.taskInfoDao.selectByTaskPid(taskId);
+		return this.taskInfoDao.selectTaskListByPid(taskId);
 
 	}
 
 	@Override
 	public List<TaskComment> getCommentsByTaskId(String taskId) {
-		return this.taskCommentDao.selectByTaskId(taskId);
+		return this.taskCommentDao.selectCommentsByTaskId(taskId);
 	}
 
 	@Override
 	public List<TaskParticipant> getParticipantByTaskId(String taskId) {
-		return this.taskParticipantDao.selectByTaskId(taskId);
+		return this.taskParticipantDao.selectParticipantsByTaskId(taskId);
 	}
 
 	@Override
 	public List<TaskFlow> getFlowsByTaskId(String taskId) {
-		return this.taskFlowDao.selectByTaskId(taskId);
+		return this.taskFlowDao.selectFlowsByTaskId(taskId);
 	}
 
 	@Override
 	public List<TaskFollow> getFollowersByTaskId(String taskId) {
-		return this.taskFollowDao.selectByTaskId(taskId);
+		return this.taskFollowDao.selectFollowsByTaskId(taskId);
 	}
 
 	@Override
 	public String getUserRoleInTask(String taskId, String userId) {
-		return this.taskInfoDao.selectUserRoleByTaskId(taskId, userId);
+		return this.taskInfoDao.selectUserRole(taskId, userId);
 	}
 
 }

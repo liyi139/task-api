@@ -31,7 +31,7 @@ public class TestTaskOperateService extends BaseSpringTest {
 		this.testDelTaskComment(taskId, commentId);
 		this.testAddParticipant(taskId);
 		this.testDelParticipant(taskId);
-		this.testDelTask(taskInfoBean.getTaskId());
+//		this.testDelTask(taskInfoBean.getTaskId());
 	}
 
 	public TaskInfoBean testAddTask(String taskPid) {
@@ -41,38 +41,38 @@ public class TestTaskOperateService extends BaseSpringTest {
 		taskInfoBean.setTaskCont("测试");
 		taskInfoBean.setCreator("ADMIN");
 		taskInfoBean.setTaskType(TaskTypeEnum.WARN_TODO.getCode());
-		String taskId = taskOperateService.addTask(taskPid, taskInfoBean, "ADMIN");
-		Assert.assertNotNull(taskId);
+		TaskInfoBean taskInfo = taskOperateService.addTask(taskPid, taskInfoBean, "ADMIN");
+		Assert.assertNotNull(taskInfo);
 		return taskInfoBean;
 	}
 
 	public void testDelTask(String taskId) {
-		Assert.assertTrue(taskOperateService.delTask(taskId, "ADMIN"));
+		taskOperateService.delTask(taskId, "ADMIN");
 	}
 
 	public void testCancelTask(String taskId) {
-		Assert.assertTrue(taskOperateService.markCancel(taskId, "ADMIN", "测试取消任务"));
+		taskOperateService.markCancel(taskId, "ADMIN", "测试取消任务");
 	}
 
 	public void testFinishTask(String taskId) {
-		Assert.assertTrue(taskOperateService.markFinish(taskId, "ADMIN", "测试任务标记完成"));
+		taskOperateService.markFinish(taskId, "ADMIN", "测试任务标记完成");
 	}
 
 	public void testRefuseTask(String taskId) {
-		Assert.assertTrue(taskOperateService.markRefuse(taskId, "ADMIN", "测试任务拒绝"));
+		taskOperateService.markRefuse(taskId, "ADMIN", "测试任务拒绝");
 	}
 
 	public void testFollowTask(String taskId) {
-		Assert.assertTrue(taskOperateService.addFollow(taskId, true, "ADMIN"));
+		taskOperateService.addFollow(taskId, true, "ADMIN");
 	}
 
 	public void testUpdateTask(TaskInfoBean taskInfo) {
 		taskInfo.setTaskName("修改任务名称");
-		Assert.assertTrue(taskOperateService.updateTask(taskInfo, "ADMIN"));
+		taskOperateService.updateTask(taskInfo, "ADMIN");
 	}
 
 	public void testAssignTask(String taskId) {
-		Assert.assertTrue(taskOperateService.addAssignTaskFlow(taskId, "DEMO", "测试指派任务", "ADMIN"));
+		taskOperateService.addAssignTaskFlow(taskId, "DEMO", "测试指派任务", "ADMIN");
 	}
 
 	public void testAddUrgeRemind(String taskId) {
@@ -80,7 +80,7 @@ public class TestTaskOperateService extends BaseSpringTest {
 	}
 
 	public String testAddAttachFile(String taskId) {
-		return taskOperateService.addAttachFile(taskId, "文件测试", "test.doc", "ADMIN");
+		return taskOperateService.addAttachFile(taskId, "文件测试", "test.doc", "ADMIN").getAttachId();
 	}
 
 	public void testDelAttachFile(String taskId, String attachId) {
@@ -88,7 +88,7 @@ public class TestTaskOperateService extends BaseSpringTest {
 	}
 
 	public String testAddTaskComment(String taskId) {
-		return taskOperateService.addTaskComment(taskId, "测试", "ADMIN");
+		return taskOperateService.addTaskComment(taskId, "测试", "ADMIN").getCommentId();
 	}
 
 	public void testDelTaskComment(String taskId, String commentId) {

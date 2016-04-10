@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rtmap.apistore.interfaces.taskland.dao.TaskFlowDao">
+	<resultMap id="BaseResultMap"
+		type="com.rtmap.apistore.interfaces.taskland.entity.TaskFlow">
+
+		<id column="FLOW_ID" property="flowId" jdbcType="VARCHAR" />
+		<result column="TASK_ID" property="taskId" jdbcType="VARCHAR" />
+		<result column="TASK_ASSIGNER" property="tasAssigner" jdbcType="VARCHAR" />
+		<result column="TASK_HANDLER" property="taskHandler" jdbcType="VARCHAR" />
+		<result column="ASSIGN_TIME" property="assignTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		FLOW_ID, TASK_ID, TASK_ASSIGNER, TASK_HANDLER, ASSIGN_TIME
+	</sql>
+	<select id="selectByFlowId" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		SELECT
+			<include refid="Base_Column_List" />
+		  FROM ${SCHEMA_TASK}.TASK_FLOW
+		 WHERE FLOW_ID = #{flowId,jdbcType=VARCHAR}
+	</select>
+	<select id="selectFlowsByTaskId" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		SELECT
+			<include refid="Base_Column_List" />
+		  FROM ${SCHEMA_TASK}.TASK_FLOW
+		 WHERE TASK_ID = #{taskId,jdbcType=VARCHAR} 
+		ORDER BY ASSIGN_TIME ASC
+	</select>
+	<delete id="deleteByFlowId">
+		DELETE FROM ${SCHEMA_TASK}.TASK_FLOW
+		 WHERE FLOW_ID IN
+		 <foreach collection="flowIds" item="flowId" open="("
+			separator="," close=")">
+			#{flowId}
+		</foreach>	
+	</delete>
+	<delete id="deleteByTaskId">
+		DELETE FROM ${SCHEMA_TASK}.TASK_FLOW
+		 WHERE TASK_ID = #{taskId}
+	</delete>
+	<insert id="insert"
+		parameterType="com.rtmap.apistore.interfaces.taskland.entity.TaskFlow">
+		INSERT INTO ${SCHEMA_TASK}.TASK_FLOW (
+			FLOW_ID,
+			TASK_ID,
+			TASK_ASSIGNER,
+			TASK_HANDLER, 
+			ASSIGN_TIME
+		)
+		SELECT
+			#{flowId,jdbcType=VARCHAR}, 
+			#{taskId,jdbcType=VARCHAR},
+			#{tasAssigner,jdbcType=VARCHAR},
+			#{taskHandler,jdbcType=VARCHAR},
+			NOW()
+		  FROM DUAL
+		 WHERE NOT EXISTS(
+			SELECT * FROM ${SCHEMA_TASK}.TASK_FLOW
+			 WHERE TASK_ID = #{taskId,jdbcType=VARCHAR}
+		       AND TASK_ASSIGNER = #{tasAssigner,jdbcType=VARCHAR}
+		       AND TASK_HANDLER = #{taskHandler,jdbcType=VARCHAR}
+		 )
+	</insert>
+</mapper>

@@ -6,9 +6,27 @@ import com.rtmap.apistore.interfaces.taskland.entity.TaskRemindLog;
 @WebRepository
 public interface TaskRemindLogDao {
 
-	int deleteByPrimaryKey(String remindId);
+	/**
+	 * 根据任务提醒日志编码，删除提醒日志
+	 * 
+	 * @param remindId
+	 * @return
+	 */
+	int deleteByRemindId(String remindId);
 
+	/**
+	 * 添加任务提醒日志
+	 * 
+	 * @param taskRemindLog
+	 * @return
+	 */
 	int insert(TaskRemindLog taskRemindLog);
 
-	TaskRemindLog selectByPrimaryKey(String remindId);
+	/**
+	 * 根据任务提醒日志编码，获取任务提醒日志对象
+	 * 
+	 * @param remindId
+	 * @return
+	 */
+	TaskRemindLog selectByRemindId(String remindId);
 }

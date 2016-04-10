@@ -29,7 +29,7 @@ import com.rtmap.apistore.interfaces.taskland.service.TaskInfoService;
  * 任务田，任务查询
  */
 @Controller
-@RequestMapping("/taskland/v1.0/")
+@RequestMapping("/taskland/v1/")
 public class TaskInfoController {
 	@SuppressWarnings("unused")
 	private final static Logger logger = LoggerFactory.getLogger(TaskInfoController.class);

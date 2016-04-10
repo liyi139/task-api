@@ -22,6 +22,16 @@ public class TaskFollow implements IEntity {
 		this.taskId = taskId == null ? null : taskId.trim();
 	}
 
+	public TaskFollow() {
+		super();
+	}
+
+	public TaskFollow(String taskId, String follower) {
+		super();
+		this.taskId = taskId;
+		this.follower = follower;
+	}
+
 	public String getFollower() {
 		return follower;
 	}
