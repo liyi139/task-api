@@ -64,7 +64,7 @@ public interface TaskInfoDao {
 	List<TaskInfoBean> selectTaskListByPid(@Param(value = "taskId") String taskPid);
 
 	/**
-	 * 根据任务编码、用户编码，获取用户在此任务中的角色：发起人、指派人、处理人、关注人
+	 * 根据任务编码、用户编码，获取用户在此任务中的角色：发起人、指派人、处理人、参与人
 	 * 
 	 * @param taskId
 	 * @param userId
@@ -76,13 +76,66 @@ public interface TaskInfoDao {
 	 * 根据筛选条件获取符合条件的任务对象列表
 	 * 
 	 * @param userId
-	 * @param group
 	 * @param queryParm
 	 * @param pageQuery
 	 * @return
 	 */
 	PageList<TaskInfoBean> selectTaskListByCond(@Param(value = "userId") String userId,
-			@Param(value = "group") String group, @Param(value = "queryParm") TaskQueryParamBean queryParm,
-			PageQuery pageQuery);
+			@Param(value = "queryParm") TaskQueryParamBean queryParm, PageQuery pageQuery);
+
+	/**
+	 * 根据筛选条件获取符合条件的用户发起任务对象列表
+	 * 
+	 * @param userId
+	 * @param queryParm
+	 * @param pageQuery
+	 * @return
+	 */
+	PageList<TaskInfoBean> selectOriginTaskListByCond(@Param(value = "userId") String userId,
+			@Param(value = "queryParm") TaskQueryParamBean queryParm, PageQuery pageQuery);
+
+	/**
+	 * 根据筛选条件获取符合条件的用户指派任务对象列表
+	 * 
+	 * @param userId
+	 * @param queryParm
+	 * @param pageQuery
+	 * @return
+	 */
+	PageList<TaskInfoBean> selectAssignTaskListByCond(@Param(value = "userId") String userId,
+			@Param(value = "queryParm") TaskQueryParamBean queryParm, PageQuery pageQuery);
+
+	/**
+	 * 根据筛选条件获取符合条件的用户关注任务对象列表
+	 * 
+	 * @param userId
+	 * @param queryParm
+	 * @param pageQuery
+	 * @return
+	 */
+	PageList<TaskInfoBean> selectFollowTaskListByCond(@Param(value = "userId") String userId,
+			@Param(value = "queryParm") TaskQueryParamBean queryParm, PageQuery pageQuery);
+
+	/**
+	 * 根据筛选条件获取符合条件的用户待办任务对象列表
+	 * 
+	 * @param userId
+	 * @param queryParm
+	 * @param pageQuery
+	 * @return
+	 */
+	PageList<TaskInfoBean> selectPendingTaskListByCond(@Param(value = "userId") String userId,
+			@Param(value = "queryParm") TaskQueryParamBean queryParm, PageQuery pageQuery);
+	
+	/**
+	 * 根据筛选条件获取符合条件的用户参与的任务对象列表
+	 * 
+	 * @param userId
+	 * @param queryParm
+	 * @param pageQuery
+	 * @return
+	 */
+	PageList<TaskInfoBean> selectParticipateTaskListByCond(@Param(value = "userId") String userId,
+			@Param(value = "queryParm") TaskQueryParamBean queryParm, PageQuery pageQuery);	
 
 }

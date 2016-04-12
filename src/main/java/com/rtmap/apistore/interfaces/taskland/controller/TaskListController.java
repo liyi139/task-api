@@ -135,13 +135,35 @@ public class TaskListController {
 	}
 
 	/**
+	 * 用户参与的任务列表查询接口
+	 * 
+	 * @param userId
+	 * @param state
+	 * @param period
+	 * @param queryParam
+	 * @return
+	 */
+	@RequestMapping(value = { "/users/{userId}/tasks/participate/",
+			"/users/{userId}/tasks/participate/{state:processing|finished}/",
+			"/users/{userId}/tasks/participate/{state:processing}/{period:today|tomorrow|other|expired}",
+			"/users/{userId}/tasks/participate/{state:finished}/{period:today|yesterday|week|month}" }, method = {
+					RequestMethod.GET })
+	@ResponseBody
+	public PageList<TaskInfoBean> getUserParticipateTasks(@PathVariable String userId, @PathVariable String state,
+			@PathVariable String period, @RequestParam TaskQueryParamBean queryParam) {
+		this.fillParams(state, period, queryParam);
+		return taskListService.getUserParticipateTasks(userId, queryParam, this.initPapeQuery(queryParam));
+
+	}
+
+	/**
 	 * 根据state、period填充查询所需的任务状态参数
 	 * 
 	 * @param state
 	 */
 	private void fillParams(String state, String period, TaskQueryParamBean queryParam) {
 		if (state.equals("processing")) {
-			queryParam.setTaskStatusAry(new Integer[] { TaskStatusEnum.PROCESSING.getCode() });
+			queryParam.setTaskStatus(new Integer[] { TaskStatusEnum.PROCESSING.getCode() });
 			if (period.equals("today")) {
 				queryParam.setDeadline_begin(DateTime.now().toDate());
 				queryParam.setDeadline_end(DateTime.now().toDate());
@@ -157,19 +179,19 @@ public class TaskListController {
 			}
 		}
 		if (state.equals("finished")) {
-			queryParam.setTaskStatusAry(new Integer[] { TaskStatusEnum.FINISH.getCode(),
-					TaskStatusEnum.REFUSE.getCode(), TaskStatusEnum.CANCEL.getCode() });
+			queryParam.setTaskStatus(new Integer[] { TaskStatusEnum.FINISH.getCode(), TaskStatusEnum.REFUSE.getCode(),
+					TaskStatusEnum.CANCEL.getCode() });
 			if (period.equals("today")) {
-				queryParam.setModifyTime_begin(DateTime.now().toDate());
+				queryParam.setModifyTime_begin(DateTime.now().withTimeAtStartOfDay().toDate());
 				queryParam.setModifyTime_end(DateTime.now().toDate());
 			} else if (period.equals("yesterday")) {
-				queryParam.setModifyTime_begin(DateTime.now().minusDays(1).toDate());
-				queryParam.setModifyTime_end(DateTime.now().minusDays(1).toDate());
+				queryParam.setModifyTime_begin(DateTime.now().withTimeAtStartOfDay().minusDays(1).toDate());
+				queryParam.setModifyTime_end(DateTime.now().toDate());
 			} else if (period.equals("week")) {
-				queryParam.setModifyTime_begin(DateTime.now().minusDays(7).toDate());
+				queryParam.setModifyTime_begin(DateTime.now().withTimeAtStartOfDay().minusDays(7).toDate());
 				queryParam.setModifyTime_end(DateTime.now().toDate());
 			} else if (period.equals("month")) {
-				queryParam.setModifyTime_begin(DateTime.now().minusDays(30).toDate());
+				queryParam.setModifyTime_begin(DateTime.now().withTimeAtStartOfDay().minusDays(30).toDate());
 				queryParam.setModifyTime_end(DateTime.now().toDate());
 			}
 		}

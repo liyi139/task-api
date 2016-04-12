@@ -54,4 +54,16 @@ public interface TaskListService {
 	 * @return
 	 */
 	public PageList<TaskInfoBean> getUserPendingTasks(String userId, TaskQueryParamBean queryParm, PageQuery pageQuery);
+
+	/**
+	 * 根据用户编码、任务筛选条件获取符合条件的用户参与的任务对象列表
+	 * 
+	 * @param userId
+	 * @param queryParm
+	 * @param pageQuery
+	 * @return
+	 */
+	public PageList<TaskInfoBean> getUserParticipateTasks(String userId, TaskQueryParamBean queryParm,
+			PageQuery pageQuery);
+
 }

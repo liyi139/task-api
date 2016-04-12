@@ -55,7 +55,7 @@
 	</select>
 	<select id="selectIdNamesByIds" resultType="java.util.HashMap" >
 		SELECT 
-			TASK_ID AS ID,TASK_NAME AS NAME
+			   TASK_ID AS ID,TASK_NAME AS NAME
 		  FROM ${SCHEMA_TASK}.TASK_INFO
 		 WHERE TASK_ID IN
 		 <foreach collection="taskIds" item="taskId" open="("
@@ -73,7 +73,8 @@
 			<![CDATA[ SUM(IF(C.TASK_STATUS<3,1,0)) AS SUB_PROCESS_COUNT ]]>
 		FROM ${SCHEMA_TASK}.TASK_INFO P
 		LEFT OUTER JOIN ${SCHEMA_TASK}.TASK_INFO C
-		     ON C.TASK_PID=P.TASK_ID AND AND <![CDATA[ C.TASK_STATUS<> -1 ]]>
+		      ON C.TASK_PID=P.TASK_ID AND 
+		     AND <![CDATA[ C.TASK_STATUS<> -1 ]]>
 		WHERE P.TASK_PID = #{taskId,jdbcType=VARCHAR}
 		GROUP BY P.TASK_ID
 		ORDER BY P.MODIFY_TIME DESC
@@ -81,29 +82,26 @@
 	<select id="selectUserRole" parameterType="java.lang.String">
 		SELECT 
 		    CASE
-		        WHEN (ASSIGNER > 0 AND HANDLER = 0) THEN 'ORIGINATOR'
-		        WHEN (ASSIGNER > 0 AND HANDLER > 0) THEN 'ASSIGNER'
-		        WHEN (ASSIGNER = 0 AND HANDLER > 0) THEN 'HANDLER'
-		        WHEN (FOLLOWER > 0) THEN 'FOLLOWER'
-		        ELSE NULL
-		    END AS ROLE
-		FROM
-		    (
-			    SELECT 
-			        COUNT(IF(T1.TASK_ASSIGNER = #{userId,jdbcType=VARCHAR}, 1, NULL)) ASSIGNER,
-			            COUNT(IF(T1.TASK_HANDLER = #{userId,jdbcType=VARCHAR}, 1, NULL)) HANDLER,
-			            COUNT(T2.FOLLOWER) FOLLOWER
-			    FROM
-			        ${SCHEMA_TASK}.TASK_FLOW T1
-			    LEFT OUTER JOIN ${SCHEMA_TASK}.TASK_FOLLOW T2 
-			         ON T1.TASK_ID = T2.TASK_ID
-			         AND T2.TASK_ID = #{taskId,jdbcType=VARCHAR}
-			         AND T2.FOLLOWER =#{userId,jdbcType=VARCHAR}
-			    WHERE T1.TASK_ID = #{taskId,jdbcType=VARCHAR}
-			      AND (T1.TASK_ASSIGNER = #{userId,jdbcType=VARCHAR} OR 
-			           T1.TASK_HANDLER = #{userId,jdbcType=VARCHAR})
-			    GROUP BY T1.TASK_ID
-		    ) T
+		         WHEN (T1.ASSIGNER = 1) THEN 'ORIGINATOR'
+		         WHEN (T1.ASSIGNER = 1 AND T1.HANDLER = 1) THEN 'ASSIGNER'
+		         WHEN (T1.ASSIGNER = 0 AND T1.HANDLER = 1) THEN 'HANDLER'
+		         WHEN (T1.ASSIGNER = 0 AND T1.HANDLER = 0 AND T2.PARTICIPANT IS NOT NULL) THEN 'PARTICIPANT'
+		    ELSE 'ILLEGAL'
+		    END  AS ROLE
+		FROM (
+			SELECT  T.TASK_ID
+		            SUM(IF(T1.TASK_ASSIGNER = #{userId,jdbcType=VARCHAR}, 1, 0)) ASSIGNER,
+		            SUM(IF(T1.TASK_HANDLER = #{userId,jdbcType=VARCHAR}, 1, 0)) HANDLER,
+		      FROM ${SCHEMA_TASK}.TASK_FLOW T
+		     WHERE T.TASK_ID = #{taskId,jdbcType=VARCHAR}
+		       AND (T.TASK_ASSIGNER = #{userId,jdbcType=VARCHAR} OR 
+		            T.TASK_HANDLER = #{userId,jdbcType=VARCHAR})
+		     GROUP BY T.TASK_ID
+	     ) T1
+		 LEFT OUTER JOIN ${SCHEMA_TASK}.TASK_PARTICIPANT T2
+			   ON T1.TASK_ID = T2.TASK_ID
+			  AND T2.PARTICIPANT =#{userId,jdbcType=VARCHAR} LIMIT 1
+		 ) T2
 	</select>
 	<update id="deleteByTaskIds">
 		UPDATE ${SCHEMA_TASK}.TASK_INFO SET TASK_STATUS = -1
@@ -216,58 +214,7 @@
 		</set>
 		WHERE TASK_ID = #{taskId,jdbcType=VARCHAR}
 	</update>
-	<select id="selectTaskListByCond" resultMap="BaseResultMap2" >
-		SELECT
-			P.*,
-			GROUP_CONCAT(C.TASK_ID) AS SUB_TASK_IDS,
-			COUNT(C.TASK_ID) AS
-			SUB_COUNT,
-			<![CDATA[ SUM(IF(C.TASK_STATUS<3,1,0))]]> AS SUB_PROCESS_COUNT
-		FROM ${SCHEMA_TASK}.TASK_INFO P
-		LEFT OUTER JOIN ${SCHEMA_TASK}.TASK_INFO C
-			 ON C.TASK_PID=P.TASK_ID
-		WHERE <![CDATA[ P.TASK_STATUS > 0]]>
-		<if test="group == 'ALL'">
-			AND (
-				P.CREATOR = #{userId} 
-				OR EXISTS(
-			 		SELECT T1.TASK_ID FROM ${SCHEMA_TASK}.TASK_FLOW T1 
-			 		 WHERE T1.TASK_ID = P.TASK_ID
-				       AND (T1.TASK_ASSIGNER = #{userId} OR T1.TASK_HANDLER = #{userId})
-			 	)
-			 	OR EXISTS(
-				  	SELECT T1.TASK_ID FROM ${SCHEMA_TASK}.TASK_FOLLOW T1 
-				  	 WHERE T1.TASK_ID = P.TASK_ID
-				  	   AND T1.FOLLOWER = #{userId}
-			 	)
-			）
-		</if>
-		<if test="group == 'PENDING'">
-			AND EXISTS (
-				SELECT T1.TASK_ID FROM ${SCHEMA_TASK}.TASK_FLOW T1 
-				 WHERE T1.TASK_ID = P.TASK_ID
-				   AND T1.TASK_HANDLER = #{userId}
-				 ORDER BY T1.ASSIGN_TIME DESC LIMIT 1
-			)
-		</if>		
-		<if test="group == 'ORIGIN'">
-			AND P.CREATOR = #{userId}
-		</if>
-		<if test="group == 'ASSIGN'">
- 			AND EXISTS (
-			  	SELECT T1.TASK_ID FROM ${SCHEMA_TASK}.TASK_FLOW T1 
-			  	 WHERE T1.TASK_ID = P.TASK_ID 
-			  	   AND T1.TASK_ASSIGNER = #{userId}
-			  	   AND P.CREATOR != #{userId}
-		  	)
-		</if>
-		<if test="group == 'FOLLOW'">
-		  AND EXISTS(
-		  	SELECT T1.TASK_ID FROM ${SCHEMA_TASK}.TASK_FOLLOW T1 
-		  	 WHERE T1.TASK_ID = P.TASK_ID
-		  	   AND T1.FOLLOWER = #{userId}
-		  )			
-		</if>
+	<sql id="_WHERE_COND_FRAGMENT">
 		<if test="queryParm.taskType != null">
 			AND P.TASK_TYPE IN
 			<foreach collection="queryParm.taskType" item="item" open="("
@@ -289,17 +236,149 @@
 			AND P.TASK_NAME LIKE CONCAT('%',#{queryParm.q},'%')
 		</if>
 		<if test="queryParm.deadline_begin != null">
-			<![CDATA[ AND DEADLINE >= queryParm.deadline_begin ]]>
+			<![CDATA[ AND P.DEADLINE >= #{queryParm.deadline_begin,jdbcType=DATE} ]]>
 		</if>
 		<if test="queryParm.deadline_end != null">
-			<![CDATA[ AND DEADLINE <= queryParm.deadline_end ]]>
+			<![CDATA[ AND P.DEADLINE <= #{queryParm.deadline_end,jdbcType=DATE} ]]>
 		</if>
 		<if test="queryParm.modifyTime_begin != null">
-			<![CDATA[ AND MODIFY_TIME >= queryParm.modifyTime_begin ]]>
+			<![CDATA[ AND P.MODIFY_TIME >= #{queryParm.modifyTime_begin,jdbcType=TIMESTAMP} ]]>
 		</if>
 		<if test="queryParm.modifyTime_end != null">
-			<![CDATA[ AND MODIFY_TIME <= queryParm.modifyTime_end ]]>
+			<![CDATA[ AND P.MODIFY_TIME <= #{queryParm.modifyTime_end,jdbcType=TIMESTAMP} ]]>
 		</if>
-		GROUP BY P.TASK_ID
+	</sql>
+	<!-- 根据筛选条件获取符合条件的,用户任务对象列表 用户任务包括：发起的、指派的、处理的、参与的-->
+	<select id="selectTaskListByCond" resultMap="BaseResultMap2" >
+		SELECT *
+		　　FROM ${SCHEMA_TASK}.TASK_INFO P
+	    　　LEFT OUTER JOIN ${SCHEMA_TASK}.TASK_INFO C
+			 　　ON C.TASK_PID=P.TASK_ID		
+		　WHERE <![CDATA[ P.TASK_STATUS > 0]]>
+		  　AND (
+		  		P.CREATOR = #{userId} 
+			　	OR EXISTS(
+		 			SELECT T1.TASK_ID FROM ${SCHEMA_TASK}.TASK_FLOW T1 
+		 		 	　WHERE T1.TASK_ID = P.TASK_ID
+			       	　　　AND (T1.TASK_ASSIGNER = #{userId} OR T1.TASK_HANDLER = #{userId})
+		 	　	)
+		 	　	OR EXISTS(
+			  		SELECT T1.TASK_ID FROM ${SCHEMA_TASK}.TASK_PARTICIPANT T1 
+			  	 	　WHERE T1.TASK_ID = P.TASK_ID
+			  	   	　　　AND T1.PARTICIPANT = #{userId}
+		 	　	)
+		  　)
+		   <include refid="_WHERE_COND_FRAGMENT" />
+		　GROUP BY P.TASK_ID
+	</select>
+	<!-- 根据筛选条件获取符合条件的,用户待办任务列表-->
+	<select id="selectPendingTaskListByCond" resultMap="BaseResultMap2" >
+		SELECT *
+		　　FROM ${SCHEMA_TASK}.TASK_INFO P
+	    　　LEFT OUTER JOIN ${SCHEMA_TASK}.TASK_INFO C
+			 　　ON C.TASK_PID=P.TASK_ID		
+		　WHERE <![CDATA[ P.TASK_STATUS > 0]]>
+		  　AND EXISTS(
+			　　　SELECT T1.TASK_ID FROM ${SCHEMA_TASK}.TASK_FLOW T1 
+				WHERE T1.TASK_ID = P.TASK_ID
+				  AND T1.TASK_HANDLER = #{userId}
+				ORDER BY T1.ASSIGN_TIME DESC LIMIT 1
+		 　　)
+		   <include refid="_WHERE_COND_FRAGMENT" />
+		　GROUP BY P.TASK_ID
+	</select>
+	<!-- 根据筛选条件获取符合条件的,用户关注任务列表-->
+	<select id="selectFollowTaskListByCond" resultMap="BaseResultMap2" >
+		SELECT *
+		　　FROM ${SCHEMA_TASK}.TASK_INFO P
+	    　　LEFT OUTER JOIN ${SCHEMA_TASK}.TASK_INFO C
+			 　　ON C.TASK_PID=P.TASK_ID		
+		　WHERE <![CDATA[ P.TASK_STATUS > 0]]>
+		  　AND EXISTS(
+			　　　SELECT T1.TASK_ID FROM ${SCHEMA_TASK}.TASK_FOLLOW T1 
+			　　　　WHERE T1.TASK_ID = P.TASK_ID
+				　　AND T1.FOLLOWER = #{userId}
+		 　　)
+		   <include refid="_WHERE_COND_FRAGMENT" />
+		　GROUP BY P.TASK_ID
+	</select>
+	<!-- 根据筛选条件获取符合条件的,用户参与任务列表-->
+	<select id="selectParticipateTaskListByCond" resultMap="BaseResultMap2" >
+		SELECT *
+		　　FROM ${SCHEMA_TASK}.TASK_INFO P
+	    　　LEFT OUTER JOIN ${SCHEMA_TASK}.TASK_INFO C
+			 　　ON C.TASK_PID=P.TASK_ID		
+		　WHERE <![CDATA[ P.TASK_STATUS > 0]]>
+		  　AND EXISTS(
+			　　　SELECT T1.TASK_ID FROM ${SCHEMA_TASK}.TASK_PARTICIPANT T1 
+			　　　　WHERE T1.TASK_ID = P.TASK_ID
+				　　AND T1.PARTICIPANT = #{userId}
+		 　　)
+		   <include refid="_WHERE_COND_FRAGMENT" />
+		　GROUP BY P.TASK_ID
+	</select>
+	<sql id="_ORIGIN_TASKLIST_SQL">
+		SELECT * 
+		  FROM ${SCHEMA_TASK}.TASK_INFO P
+		　WHERE <![CDATA[ P.TASK_STATUS > 0]]> 
+		   AND P.CREATOR = #{userId} 
+		   <include refid="_WHERE_COND_FRAGMENT" />
+	</sql>
+	<sql id="_ASSIGN_TASKLIST_SQL">
+		SELECT * 
+		  FROM ${SCHEMA_TASK}.TASK_INFO P
+		　WHERE <![CDATA[ P.TASK_STATUS > 0]]> 
+		   AND P.CREATOR = #{userId}
+		   AND EXISTS(
+			  　SELECT T.TASK_ID FROM ${SCHEMA_TASK}.TASK_FLOW T
+			  	WHERE T.TASK_ID = P.TASK_ID 
+			  	  AND T.TASK_ASSIGNER = #{userId}
+			  	  AND P.CREATOR != #{userId}
+		 　　) 
+		 <include refid="_WHERE_COND_FRAGMENT" />	
+	</sql>	
+	<!-- 根据筛选条件获取符合条件的,任务跟踪列表：用户发起的-->
+	<select id="selectOriginTaskListByCond" resultMap="BaseResultMap2" >
+	    SELECT 
+	        P.*,
+	        GROUP_CONCAT(C.TASK_ID) AS SUB_TASK_IDS,
+	        COUNT(C.TASK_ID) AS
+	        SUB_COUNT,  
+	        <![CDATA[ SUM(IF(C.TASK_STATUS<3,1,0))]]> AS SUB_PROCESS_COUNT        
+	      FROM (
+				<include refid="_ORIGIN_TASKLIST_SQL" />
+	         　　) P
+	      LEFT OUTER JOIN ${SCHEMA_TASK}.TASK_INFO C
+	       　ON C.TASK_PID=P.TASK_ID
+	     WHERE NOT EXISTS (
+	        SELECT T.TASK_ID 
+	          FROM (
+					<include refid="_ORIGIN_TASKLIST_SQL" />
+	          　　　　　) T 
+	         WHERE P.TASK_ID = T.TASK_PID
+	      )
+	     GROUP BY P.TASK_ID
+	</select>
+	<!-- 根据筛选条件获取符合条件的,任务跟踪列表：用户指派的-->
+	<select id="selectAssignTaskListByCond" resultMap="BaseResultMap2" >
+	    SELECT 
+	        P.*,
+	        GROUP_CONCAT(C.TASK_ID) AS SUB_TASK_IDS,
+	        COUNT(C.TASK_ID) AS
+	        SUB_COUNT,  
+	        <![CDATA[ SUM(IF(C.TASK_STATUS<3,1,0))]]> AS SUB_PROCESS_COUNT        
+	      FROM (
+				<include refid="_ASSIGN_TASKLIST_SQL" />
+	         　　) P
+	      LEFT OUTER JOIN ${SCHEMA_TASK}.TASK_INFO C
+	       　ON C.TASK_PID=P.TASK_ID
+	     WHERE NOT EXISTS (
+	        SELECT T.TASK_ID 
+	          FROM (
+					<include refid="_ASSIGN_TASKLIST_SQL" />
+	          　　　　　) T 
+	         WHERE P.TASK_ID = T.TASK_PID
+	      )
+	     GROUP BY P.TASK_ID	
 	</select>
 </mapper>

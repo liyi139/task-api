@@ -1,7 +1,7 @@
 package com.rtmap.apistore.interfaces.taskland.enums;
 
 public enum TaskFlowRoleEnum {
-	ORIGINATOR("发起人"), ASSIGNER("指派人"), HANDLER("处理人"), FOLLOWER("参与人");
+	ORIGINATOR("发起人"), ASSIGNER("指派人"), HANDLER("处理人"), PARTICIPANT("参与人"),ILLEGAL("非法用户");
 
 	private String code;
 

@@ -20,14 +20,19 @@ public class TaskQueryParamBean {
 	private Integer limit = TasklandConstant.DEFAULT_PAGE_LIMIT;
 	// 当前页
 	private Integer curPage = 1;
+
 	// 搜索关键词
 	private String q = null;
+
 	// 到期日期开始时间
 	private Date deadline_begin = null;
+
 	// 到期日期结束时间
 	private Date deadline_end = null;
+
 	// 更新日期开始时间
 	private Date modifyTime_begin = null;
+
 	// 更新日期结束时间
 	private Date modifyTime_end = null;
 	// 指派人
@@ -41,46 +46,6 @@ public class TaskQueryParamBean {
 
 	public Integer getCurPage() {
 		return curPage;
-	}
-
-	public Integer[] getTaskTypeAry() {
-		return taskType;
-	}
-
-	public void setTaskTypeAry(Integer[] taskTypeAry) {
-		this.taskType = taskTypeAry;
-	}
-
-	public Integer[] getTaskStatusAry() {
-		return taskStatus;
-	}
-
-	public void setTaskStatusAry(Integer[] taskStatusAry) {
-		this.taskStatus = taskStatusAry;
-	}
-
-	public Integer getTaskPriority() {
-		return taskPriority;
-	}
-
-	public void setTaskPriority(Integer taskPriority) {
-		this.taskPriority = taskPriority;
-	}
-
-	public Date getModifyTime_begin() {
-		return modifyTime_begin;
-	}
-
-	public void setModifyTime_begin(Date modifyTime_begin) {
-		this.modifyTime_begin = modifyTime_begin;
-	}
-
-	public Date getModifyTime_end() {
-		return modifyTime_end;
-	}
-
-	public void setModifyTime_end(Date modifyTime_end) {
-		this.modifyTime_end = modifyTime_end;
 	}
 
 	public Date getDeadline_begin() {
@@ -99,6 +64,14 @@ public class TaskQueryParamBean {
 		return limit;
 	}
 
+	public Date getModifyTime_begin() {
+		return modifyTime_begin;
+	}
+
+	public Date getModifyTime_end() {
+		return modifyTime_end;
+	}
+
 	public String getOrder() {
 		return order;
 	}
@@ -109,6 +82,18 @@ public class TaskQueryParamBean {
 
 	public String getSort() {
 		return sort;
+	}
+
+	public Integer getTaskPriority() {
+		return taskPriority;
+	}
+
+	public Integer[] getTaskStatus() {
+		return taskStatus;
+	}
+
+	public Integer[] getTaskType() {
+		return taskType;
 	}
 
 	public void setAssigner(String[] assigner) {
@@ -139,6 +124,14 @@ public class TaskQueryParamBean {
 		this.limit = limit;
 	}
 
+	public void setModifyTime_begin(Date modifyTime_begin) {
+		this.modifyTime_begin = modifyTime_begin;
+	}
+
+	public void setModifyTime_end(Date modifyTime_end) {
+		this.modifyTime_end = modifyTime_end;
+	}
+
 	public void setOrder(String order) {
 		this.order = order;
 	}
@@ -149,5 +142,17 @@ public class TaskQueryParamBean {
 
 	public void setSort(String sort) {
 		this.sort = sort;
+	}
+
+	public void setTaskPriority(Integer taskPriority) {
+		this.taskPriority = taskPriority;
+	}
+
+	public void setTaskStatus(Integer[] taskStatus) {
+		this.taskStatus = taskStatus;
+	}
+
+	public void setTaskType(Integer[] taskType) {
+		this.taskType = taskType;
 	}
 }
